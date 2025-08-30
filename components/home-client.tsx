@@ -4,6 +4,8 @@ import { useState } from "react"
 import { Timeline } from "./timeline"
 import { EventPanel } from "./event-panel"
 import { getEventsForYear } from "@/lib/events"
+import EventFlashes from "./event-flashes"
+import { SelectedEventCoords } from "./selected-event-coords"
 
 const COLORS = {
   primary: "#22d3ee",
@@ -79,6 +81,9 @@ export default function HomeClient() {
           <Timeline min={2015} max={2025} value={year} onChange={setYear} colors={COLORS} />
         </div>
       </div>
+
+      <EventFlashes events={events} selected={undefined} />
+      <SelectedEventCoords selected={undefined} />
     </div>
   )
 }

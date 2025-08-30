@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { EventItem } from "@/lib/events"
+import { Card, CardDescription, CardHeader } from "@/components/ui/card"
 
 export function FocusOverlay({
   selected,
@@ -22,64 +23,19 @@ export function FocusOverlay({
   return (
     <AnimatePresence>
       {selected && (
-        <motion.div
-          key="focus-overlay"
-          className="fixed inset-0 z-[60]"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Event distance focus"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Dim with stronger opacity so lines are clearly visible */}
+        <div className="fixed inset-0 z-50">
           <motion.div
-            className="absolute inset-0 bg-black/80 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            aria-hidden="true"
           />
 
-          {/* Centered visualization container */}
-          <div className="pointer-events-none absolute inset-0 grid place-items-center">
-            <FocusVizCentered selected={selected} />
-          </div>
-
-          {/* Compact info bar */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 bottom-8 md:bottom-10 w-[92%] max-w-2xl rounded-xl bg-black/55 backdrop-blur px-5 py-4 border border-white/10 text-white"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-gray-300">{selected.year}</p>
-                <h3 className="text-lg md:text-xl font-semibold">{selected.event}</h3>
-              </div>
-              <button
-                className="pointer-events-auto rounded-md px-3 py-1.5 bg-white/10 hover:bg-white/15 text-sm"
-                onClick={onClose}
-                aria-label="Close focus view"
-                autoFocus
-              >
-                Close
-              </button>
-            </div>
-            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-              <div className="rounded-md bg-white/5 p-2">
-                <div className="text-gray-300">Angular</div>
-                <div className="font-medium">{selected.angular_distance_deg.toFixed(2)}°</div>
-              </div>
-              <div className="rounded-md bg-white/5 p-2">
-                <div className="text-gray-300">Spatial</div>
-                <div className="font-medium">{selected.spatial_distance_mly} Mly</div>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+          <FocusVizCentered selected={selected} />
+          
+          {/* Black card removed as requested */}
+        </div>
       )}
     </AnimatePresence>
   )
@@ -91,23 +47,28 @@ function FocusVizCentered({ selected }: { selected: EventItem }) {
   const cx = 500
   const cy = 500
 
-  // Scale radii so they are always visible within the viewBox
-  const rAngular = 80 + Math.min(150, selected.angular_distance_deg * 8) // deg -> px
-  const rSpatial = rAngular + 60 + Math.min(180, selected.spatial_distance_mly * 0.5) // mly -> px
+  // Adjust the visualization to be slightly more compact to prevent overlap
+  // Scale factor based on confidence - more confident events get larger visualizations
+  const scaleFactor = 0.9 - (selected.confidence * 0.15)
+  
+  // Clamp radii to prevent them from becoming too large and going off-screen
+  // Reduced maximum values to prevent overlaps
+  const rAngular = Math.min(180, (80 + selected.angular_distance_deg * 8) * scaleFactor)
+  const rSpatial = Math.min(380, (rAngular + 60 + selected.spatial_distance_mly * 0.4) * scaleFactor)
 
   const arc = (r: number) => {
     const sweep = 300
-    const start = (-sweep / 2) * (Math.PI / 180)
-    const end = (sweep / 2) * (Math.PI / 180)
-    return `M ${cx + Math.cos(start) * r} ${cy + Math.sin(start) * r} A ${r} ${r} 0 0 1 ${cx + Math.cos(end) * r} ${
-      cy + Math.sin(end) * r
-    }`
+    const startAngle = (-sweep / 2) * (Math.PI / 180)
+    const endAngle = (sweep / 2) * (Math.PI / 180)
+    const start = { x: cx + r * Math.cos(startAngle), y: cy + r * Math.sin(startAngle) }
+    const end = { x: cx + r * Math.cos(endAngle), y: cy + r * Math.sin(endAngle) }
+    return `M ${start.x} ${start.y} A ${r} ${r} 0 1 1 ${end.x} ${end.y}`
   }
 
   return (
     <motion.svg
-      className="w-[92vw] max-w-[1080px] h-auto"
       viewBox="0 0 1000 1000"
+      className="absolute inset-0 z-50 h-full w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -124,68 +85,86 @@ function FocusVizCentered({ selected }: { selected: EventItem }) {
           <stop offset="0%" stopColor="#22d3ee" />
           <stop offset="100%" stopColor="#facc15" />
         </linearGradient>
+        {/* Add IDs to the arc paths so text can reference them */}
+        <path id="angularPath" d={arc(rAngular)} fill="none" />
+        <path id="spatialPath" d={arc(rSpatial)} fill="none" />
+        <path id="coordPath" d={`M ${cx-150} ${cy+80} L ${cx+150} ${cy+80}`} fill="none" />
       </defs>
 
-      {/* Pulsing core marker (center) */}
-      <motion.circle
-        cx={cx}
-        cy={cy}
-        r={12}
-        fill="#22d3ee"
-        filter="url(#glow-strong)"
-        animate={{ r: [12, 16, 12], opacity: [1, 0.7, 1] }}
-        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.8, ease: "easeInOut" }}
-      />
-
-      {/* Angular arc */}
+      {/* Render visible arcs */}
       <motion.path
         d={arc(rAngular)}
         stroke="url(#holo)"
-        strokeWidth={3}
-        strokeDasharray="6 10"
-        filter="url(#glow-strong)"
+        strokeWidth={2}
+        strokeLinecap="round"
         fill="none"
-        initial={{ pathLength: 0, opacity: 0.5 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        filter="url(#glow-strong)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.0, ease: "easeInOut" }}
       />
-      {/* Spatial arc */}
       <motion.path
         d={arc(rSpatial)}
-        stroke="#facc15"
+        stroke="url(#holo)"
         strokeWidth={2}
-        strokeDasharray="2 8"
-        filter="url(#glow-strong)"
+        strokeLinecap="round"
         fill="none"
-        initial={{ pathLength: 0, opacity: 0.5 }}
-        animate={{ pathLength: 1, opacity: 1 }}
+        filter="url(#glow-strong)"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
         transition={{ delay: 0.1, duration: 1.0, ease: "easeInOut" }}
       />
 
-      {/* Labels */}
-      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <text
-          x={cx + rAngular + 18}
-          y={cy}
-          dy="0.35em" // Vertically center text on the line
-          textAnchor="start"
-          fill="#e5e7eb"
-          fontSize="18"
+      {/* Labels attached directly to arc paths */}
+      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+        {/* Angular Label */}
+        <text dy={-8} fill="#e5e7eb" fontSize="11" className="uppercase tracking-wider opacity-70">
+          <textPath href="#angularPath" startOffset="50%" textAnchor="middle">
+            Angular Separation
+          </textPath>
+        </text>
+        <text dy={16} fill="#e5e7eb" fontSize="18" filter="url(#glow-strong)">
+          <textPath href="#angularPath" startOffset="50%" textAnchor="middle">
+            {selected.angular_distance_deg.toFixed(2)}°
+          </textPath>
+        </text>
+
+        {/* Spatial Label */}
+        <text dy={-8} fill="#facc15" fontSize="11" className="uppercase tracking-wider opacity-70">
+          <textPath href="#spatialPath" startOffset="50%" textAnchor="middle">
+            Spatial Distance
+          </textPath>
+        </text>
+        <text dy={16} fill="#facc15" fontSize="18" filter="url(#glow-strong)">
+          <textPath href="#spatialPath" startOffset="50%" textAnchor="middle">
+            {selected.spatial_distance_mly} Mly
+          </textPath>
+        </text>
+        
+        {/* Coordinates moved to left top corner to never overlap with arcs */}
+        <text 
+          x={140} 
+          y={100} 
+          fill="#cfcfee" 
+          fontSize="12" 
+          textAnchor="start" 
+          className="uppercase tracking-wider opacity-70" 
+        >
+          SOURCE COORDINATES
+        </text>
+        <text 
+          x={140} 
+          y={125} 
+          fill="#cfcfee" 
+          fontSize="18" 
+          textAnchor="start" 
+          className="font-mono" 
           filter="url(#glow-strong)"
         >
-          {selected.angular_distance_deg.toFixed(1)}°
+          RA {selected.lng.toFixed(2)}° / DEC {selected.lat.toFixed(2)}°
         </text>
-        <text
-          x={cx + rSpatial + 18}
-          y={cy}
-          dy="0.35em" // Vertically center text on the line
-          textAnchor="start"
-          fill="#facc15"
-          fontSize="18"
-          filter="url(#glow-strong)"
-        >
-          {selected.spatial_distance_mly} Mly
-        </text>
+        
+        {/* Event info completely removed as requested */}
       </motion.g>
     </motion.svg>
   )

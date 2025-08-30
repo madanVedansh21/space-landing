@@ -4,7 +4,7 @@ export type EventItem = {
   type: "Gamma Burst" | "Neutrino" | "Gravitational Wave" | "Radio"
   confidence: number // 0..1
   lat: number // -90..90
-  lng: number // -180..180
+  lng: number // -180..180  
   description: string
   source: string
   event: string
