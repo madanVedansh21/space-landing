@@ -100,7 +100,12 @@ export default function YearDial({ years, defaultYear, onChange }: Props) {
           className="absolute -translate-x-1/2 -translate-y-1/2"
           style={{ left: `${knob.x}%`, top: `${knob.y}%` }}
           animate={{ left: `${knob.x}%`, top: `${knob.y}%`, scale: [1, 1.08, 1] }}
-          transition={{ type: "spring", stiffness: 300, damping: 28 }}
+          transition={{
+            // Spring for position
+            default: { type: "spring", stiffness: 300, damping: 28 },
+            // Tween for scale keyframes
+            scale: { duration: 0.4, ease: "easeInOut" },
+          }}
         >
           <div className="relative">
             <div className="h-4 w-4 rounded-full bg-amber-300 ring-2 ring-amber-300/70 shadow-[0_0_20px_6px_rgba(250,204,21,0.55)]" />

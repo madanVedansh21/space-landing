@@ -91,9 +91,9 @@ function FocusVizCentered({ selected }: { selected: EventItem }) {
   const cx = 500
   const cy = 500
 
-  // Scale radii so differences are obvious but clamped for visibility
-  const rAngular = 80 + Math.min(300, selected.angular_distance_deg * 14) // deg -> px
-  const rSpatial = rAngular + 40 + Math.min(420, selected.spatial_distance_mly * 1.2) // mly -> px
+  // Scale radii so they are always visible within the viewBox
+  const rAngular = 80 + Math.min(150, selected.angular_distance_deg * 8) // deg -> px
+  const rSpatial = rAngular + 60 + Math.min(180, selected.spatial_distance_mly * 0.5) // mly -> px
 
   const arc = (r: number) => {
     const sweep = 300
@@ -163,11 +163,27 @@ function FocusVizCentered({ selected }: { selected: EventItem }) {
       />
 
       {/* Labels */}
-      <motion.g initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-        <text x={cx + rAngular + 18} y={cy - 10} fill="#e5e7eb" fontSize="18" filter="url(#glow-strong)">
+      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <text
+          x={cx + rAngular + 18}
+          y={cy}
+          dy="0.35em" // Vertically center text on the line
+          textAnchor="start"
+          fill="#e5e7eb"
+          fontSize="18"
+          filter="url(#glow-strong)"
+        >
           {selected.angular_distance_deg.toFixed(1)}°
         </text>
-        <text x={cx + rSpatial + 18} y={cy + 22} fill="#facc15" fontSize="18" filter="url(#glow-strong)">
+        <text
+          x={cx + rSpatial + 18}
+          y={cy}
+          dy="0.35em" // Vertically center text on the line
+          textAnchor="start"
+          fill="#facc15"
+          fontSize="18"
+          filter="url(#glow-strong)"
+        >
           {selected.spatial_distance_mly} Mly
         </text>
       </motion.g>
