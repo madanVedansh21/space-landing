@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import EventFlashes from "@/components/event-flashes"
 import YearDial from "@/components/year-dial"
 import { EventPanel } from "@/components/event-panel"
@@ -10,9 +10,17 @@ import { FocusOverlay } from "@/components/focus-overlay"
 export default function LandingOverlay() {
   const years = useMemo(() => Array.from({ length: 11 }, (_, i) => 2015 + i), [])
   const [year, setYear] = useState<number>(2020)
-  const events = useMemo(() => getEventsForYear(year), [year])
-
+  const [events, setEvents] = useState<EventItem[]>([])
   const [selected, setSelected] = useState<EventItem | undefined>(undefined)
+
+  useEffect(() => {
+    async function fetchEvents() {
+      const fetchedEvents = await getEventsForYear(year);
+      setEvents(fetchedEvents);
+    }
+
+    fetchEvents();
+  }, [year]);
 
   const counts = useMemo(() => {
     const map: Record<string, number> = {}
@@ -65,7 +73,7 @@ export default function LandingOverlay() {
               colors={colors}
               onSelect={(ev) => setSelected(ev)}
               selectedId={selected?.id}
-              maxVisible={3}
+              maxVisible={10}
             />
           </div>
         </section>
