@@ -97,10 +97,16 @@ export function FocusOverlay({
                   <div>
                     <h4 className="font-semibold text-cyan-300 text-lg">Outer Arc - Spatial Distance</h4>
                     <p className="text-base text-white/90 mt-2">
-                      How far away the event actually is: <strong>{selected.spatial_distance_mly.toLocaleString()} million light-years</strong>
+                      How far away the event actually is: <strong>
+                        {selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
+                          ? `${selected.spatial_distance_mly.toLocaleString()} million light-years`
+                          : 'N/A million light-years'}
+                      </strong>
                     </p>
                     <p className="text-sm text-cyan-300/90 mt-2">
-                      {getDistanceAnalogy(selected.spatial_distance_mly)}
+                      {selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
+                        ? getDistanceAnalogy(selected.spatial_distance_mly)
+                        : 'In the distant universe'}
                     </p>
                   </div>
                 </div>
@@ -154,7 +160,9 @@ function FocusVizCentered({
   // Clamp radii to prevent them from becoming too large and going off-screen
   // Reduced maximum values to prevent overlaps
   const rAngular = Math.min(180, (80 + selected.angular_distance_deg * 8) * scaleFactor)
-  const rSpatial = Math.min(380, (rAngular + 60 + selected.spatial_distance_mly * 0.4) * scaleFactor)
+  const rSpatial = selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
+    ? Math.min(380, (rAngular + 60 + selected.spatial_distance_mly * 0.4) * scaleFactor)
+    : Math.min(380, (rAngular + 60) * scaleFactor)
 
   const arc = (r: number) => {
     const sweep = 300
@@ -273,7 +281,9 @@ function FocusVizCentered({
           transition={{ duration: 0.2 }}
         >
           <textPath href="#spatialPath" startOffset="50%" textAnchor="middle">
-            {selected.spatial_distance_mly} Mly
+            {selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
+              ? `${selected.spatial_distance_mly} Mly`
+              : 'N/A Mly'}
           </textPath>
         </motion.text>
         

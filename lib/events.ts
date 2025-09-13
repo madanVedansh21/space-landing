@@ -21,6 +21,7 @@ interface CorrelatedEvent {
   gw_dec: number;
   gw_ra: number;
   angular_sep_deg: number;
+  spatial_distance_mly: number;
 }
 
 interface ApiResponse {
@@ -57,11 +58,12 @@ export async function getEventsForYear(year: number): Promise<EventItem[]> {
         description: `Correlation between ${event.gw_event_id} and ${event.grb_event_id}.`,
         source: 'Correlated',
         event: `${event.gw_event_id} + ${event.grb_event_id}`,
-        angular_distance_deg: event.angular_sep_deg,
-        spatial_distance_mly: 0,
+        angular_distance_deg: Number(event.angular_sep_deg),
+        spatial_distance_mly: Number(event.spatial_distance_mly),
       }));
     }
     return [];
+    
   } catch (error) {
     console.error("Failed to fetch events:", error);
     return [];
