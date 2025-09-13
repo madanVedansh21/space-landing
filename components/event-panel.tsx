@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
 import type { EventItem } from "@/lib/events"
+import { AccessibleTooltip } from "@/components/ui/accessible-tooltip"
+import { getDistanceAnalogy, getAngularAnalogy, getConfidenceDescription } from "@/lib/accessibility-helpers"
 
 type Props = {
   year: number
@@ -45,6 +47,13 @@ export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisi
         </CardHeader>
         <CardContent className="text-sm text-white/70">
           Showing {reduced.length} of {events.length} events. Click a card to focus and reveal holographic distances.
+          <div className="mt-2 text-xs text-white/60">
+            💡 <AccessibleTooltip term="Detection Confidence" showIcon={false}>
+              <span className="underline decoration-dotted decoration-cyan-300/50 underline-offset-2">
+                Hover over underlined terms
+              </span>
+            </AccessibleTooltip> for explanations
+          </div>
         </CardContent>
       </Card>
 
@@ -82,27 +91,23 @@ export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisi
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between">
                           <div className="font-medium text-white">{ev.event}</div>
-                          <div className="text-xs text-white/60">{pct}%</div>
+                          <AccessibleTooltip term="Detection Confidence">
+                            <div className="text-xs text-white/60 cursor-help">{pct}%</div>
+                          </AccessibleTooltip>
                         </div>
 
                         <p className="mt-1 text-sm leading-relaxed text-white/80">{ev.description}</p>
 
-                        <div className="mt-2 grid grid-cols-3 gap-3 text-xs text-white/70">
-                          <span>Type: {ev.type}</span>
-                          <span>Src: {ev.source}</span>
-                          <span>
+                        {/* Simplified layout - just the key info */}
+                        <div className="mt-3 flex items-center justify-between text-sm">
+                          <AccessibleTooltip term={ev.type}>
+                            <span className="cursor-help text-white/70">
+                              {ev.type}
+                            </span>
+                          </AccessibleTooltip>
+                          <span className="text-white/50 text-xs">
                             {ev.lat.toFixed(1)}°, {ev.lng.toFixed(1)}°
                           </span>
-                        </div>
-
-                        <div className="mt-2 grid grid-cols-2 gap-3 text-xs text-white/80">
-                          <div className="rounded-md bg-white/5 px-2 py-1">
-                            ⌀ Angular: <strong className="text-amber-300">{ev.angular_distance_deg.toFixed(1)}°</strong>
-                          </div>
-                          <div className="rounded-md bg-white/5 px-2 py-1">
-                            ↗ Spatial:{" "}
-                            <strong className="text-cyan-300">{ev.spatial_distance_mly.toLocaleString()} Mly</strong>
-                          </div>
                         </div>
 
                         <div className="mt-3">
