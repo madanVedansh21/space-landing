@@ -2,7 +2,7 @@ import {connectToDatabase} from "@/lib/db";
 import { NextResponse } from "next/server";
 import CorrelatedData from "@/lib/models/correlated.models";
 
-// GET /api/correlated
+// GET localhost:3000/api/correlated
 export async function GET() {
 	try {
 		await connectToDatabase();
