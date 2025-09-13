@@ -45,85 +45,88 @@ export function FocusOverlay({
             onArcHover={setHighlightedArc}
           />
           
-          {/* Close button */}
-          <div className="absolute top-4 left-4 z-60">
+          {/* Close button - now bigger and top right */}
+          <div className="absolute top-6 right-12 z-60">
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              className="text-white/100 hover:text-white hover:bg-white/10 transition-colors w-14 h-14 cursor-pointer"
               aria-label="Close detailed view"
             >
-              <XIcon className="h-5 w-5" />
+              <XIcon className="h-32 w-32" />
             </Button>
           </div>
 
-          {/* Help button */}
-          <div className="absolute top-4 right-4 z-60">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowExplanation(!showExplanation)}
-              className="text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-              aria-label="Toggle explanation"
-            >
-              <InfoIcon className="h-4 w-4 mr-2" />
-              {showExplanation ? "Hide" : "Explain"} Arcs
-            </Button>
-          </div>
+          {/* Left panel - Inner Arc */}
+          <motion.div 
+            className="absolute left-[15%] top-1/2 -translate-y-1/2 z-60 max-w-[320px]"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+          >
+            <Card className="border-white/10 bg-black/70 backdrop-blur">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3 rounded-lg bg-amber-500/10 border border-amber-500/20 p-4">
+                  <div className="w-3 h-3 rounded-full bg-amber-300 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-amber-300 text-lg">Inner Arc - Angular Distance</h4>
+                    <p className="text-base text-white/90 mt-2">
+                      How large the event appears in our sky: <strong>{selected.angular_distance_deg.toFixed(2)}°</strong>
+                    </p>
+                    <p className="text-sm text-amber-300/90 mt-2">
+                      {getAngularAnalogy(selected.angular_distance_deg)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          {/* Explanation panel */}
-          <AnimatePresence>
-            {showExplanation && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="absolute bottom-4 left-4 right-4 z-60"
-              >
-                <Card className="border-white/10 bg-black/90 backdrop-blur">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg">Understanding the Arcs</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-white/80">
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                        <div className="w-3 h-3 rounded-full bg-amber-300 mt-1 flex-shrink-0" />
-                        <div>
-                          <h4 className="font-semibold text-amber-300">Inner Arc - Angular Distance</h4>
-                          <p className="text-sm text-white/80">
-                            How large the event appears in our sky: <strong>{selected.angular_distance_deg.toFixed(2)}°</strong>
-                          </p>
-                          <p className="text-xs text-amber-300/80 mt-1">
-                            {getAngularAnalogy(selected.angular_distance_deg)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-                        <div className="w-3 h-3 rounded-full bg-cyan-300 mt-1 flex-shrink-0" />
-                        <div>
-                          <h4 className="font-semibold text-cyan-300">Outer Arc - Spatial Distance</h4>
-                          <p className="text-sm text-white/80">
-                            How far away the event actually is: <strong>{selected.spatial_distance_mly.toLocaleString()} million light-years</strong>
-                          </p>
-                          <p className="text-xs text-cyan-300/80 mt-1">
-                            {getDistanceAnalogy(selected.spatial_distance_mly)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="p-3 rounded-lg bg-white/5">
-                        <p className="text-sm text-white/80">
-                          <strong>💡 Think of it like a lighthouse:</strong> The inner arc shows how bright it appears to you, 
-                          while the outer arc shows how far away it actually is. A nearby dim lighthouse might appear 
-                          as bright as a distant powerful one!
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Right panel - Outer Arc */}
+          <motion.div 
+            className="absolute right-[15%] top-1/2 -translate-y-1/2 z-60 max-w-[320px]"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+          >
+            <Card className="border-white/10 bg-black/70 backdrop-blur">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20 p-4">
+                  <div className="w-3 h-3 rounded-full bg-cyan-300 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-cyan-300 text-lg">Outer Arc - Spatial Distance</h4>
+                    <p className="text-base text-white/90 mt-2">
+                      How far away the event actually is: <strong>{selected.spatial_distance_mly.toLocaleString()} million light-years</strong>
+                    </p>
+                    <p className="text-sm text-cyan-300/90 mt-2">
+                      {getDistanceAnalogy(selected.spatial_distance_mly)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Lighthouse analogy at bottom */}
+          <motion.div 
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-60 max-w-[600px] w-full px-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            
+              <CardContent className="p-6">
+                <div className="flex items-start gap-3 rounded-lg bg-black/40 border border-white/10 p-8">
+                  <p className="text-base text-white/80">
+                    <strong>💡 Think of it like a lighthouse:</strong> The inner arc shows how bright it appears to you, 
+                    while the outer arc shows how far away it actually is. A nearby dim lighthouse might appear 
+                    as bright as a distant powerful one!
+                  </p>
+                </div>
+              </CardContent>
+
+          </motion.div>
         </div>
       )}
     </AnimatePresence>
@@ -292,12 +295,29 @@ function FocusVizCentered({
           }}
         />
         
+        {/* Event title and coordinates in one group near top */}
+        <filter id="title-bg">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.8 0"/>
+        </filter>
+        
+        {/* Background for both title and coordinates */}
+        <rect
+          x={cx - 250}
+          y="120"
+          width="500"
+          height="100"
+          fill="black"
+          filter="url(#title-bg)"
+          opacity="0.8"
+        />
+        
         {/* Event title */}
         <text 
           x={cx} 
-          y={cy - 120} 
+          y="160" 
           fill="#ffffff" 
-          fontSize="24" 
+          fontSize="32" 
           textAnchor="middle" 
           className="font-semibold" 
           filter="url(#glow-strong)"
@@ -305,25 +325,14 @@ function FocusVizCentered({
           {selected.event}
         </text>
         
-        {/* Coordinates moved to left top corner to never overlap with arcs */}
+        {/* Coordinates right below title */}
         <text 
-          x={140} 
-          y={100} 
+          x={cx} 
+          y="195" 
           fill="#cfcfee" 
-          fontSize="12" 
-          textAnchor="start" 
+          fontSize="16" 
+          textAnchor="middle" 
           className="uppercase tracking-wider opacity-70" 
-        >
-          SOURCE COORDINATES
-        </text>
-        <text 
-          x={140} 
-          y={125} 
-          fill="#cfcfee" 
-          fontSize="18" 
-          textAnchor="start" 
-          className="font-mono" 
-          filter="url(#glow-strong)"
         >
           RA {selected.lng.toFixed(2)}° / DEC {selected.lat.toFixed(2)}°
         </text>
