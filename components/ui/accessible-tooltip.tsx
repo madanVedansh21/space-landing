@@ -10,6 +10,7 @@ const TooltipProvider = TooltipPrimitive.Provider
 const Tooltip = TooltipPrimitive.Root
 const TooltipTrigger = TooltipPrimitive.Trigger
 const TooltipContent = TooltipPrimitive.Content
+const TooltipPortal = TooltipPrimitive.Portal
 
 interface AccessibleTooltipProps {
   term: string
@@ -47,36 +48,39 @@ export function AccessibleTooltip({
             )}
           </span>
         </TooltipTrigger>
-        <TooltipContent 
-          side={side}
-          className={cn(
-            "max-w-xs p-4 bg-black/90 border border-cyan-300/30 text-white text-sm rounded-lg shadow-xl z-50",
-            "data-[state=delayed-open]:animate-in data-[state=closed]:animate-out",
-            "data-[state=closed]:fade-out-0 data-[state=delayed-open]:fade-in-0",
-            "data-[state=closed]:zoom-out-95 data-[state=delayed-open]:zoom-in-95",
-            className
-          )}
-        >
-          <div className="space-y-2">
-            <div className="font-semibold text-cyan-300">{info.term}</div>
-            <div className="text-white/90">{info.definition}</div>
-            {info.analogy && (
-              <div className="text-amber-300/90 text-xs italic">
-                💡 {info.analogy}
-              </div>
+        <TooltipPortal>
+          <TooltipContent 
+            side={side}
+            sideOffset={8}
+            className={cn(
+              "max-w-md p-5 bg-black/95 border border-cyan-300/30 text-white text-base rounded-lg shadow-2xl z-50",
+              "data-[state=delayed-open]:animate-in data-[state=closed]:animate-out",
+              "data-[state=closed]:fade-out-0 data-[state=delayed-open]:fade-in-0",
+              "data-[state=closed]:zoom-out-95 data-[state=delayed-open]:zoom-in-95",
+              className
             )}
-            {info.context && (
-              <div className="text-white/70 text-xs">
-                {info.context}
-              </div>
-            )}
-            {info.units && (
-              <div className="text-cyan-300/70 text-xs font-mono">
-                Units: {info.units}
-              </div>
-            )}
-          </div>
-        </TooltipContent>
+          >
+            <div className="space-y-3">
+              <div className="font-semibold text-lg text-cyan-300">{info.term}</div>
+              <div className="text-white/90 leading-relaxed">{info.definition}</div>
+              {info.analogy && (
+                <div className="text-amber-300/90 text-sm italic leading-relaxed">
+                  💡 {info.analogy}
+                </div>
+              )}
+              {info.context && (
+                <div className="text-white/80 text-sm mt-1">
+                  {info.context}
+                </div>
+              )}
+              {info.units && (
+                <div className="text-cyan-300/80 text-sm font-mono mt-2">
+                  Units: {info.units}
+                </div>
+              )}
+            </div>
+          </TooltipContent>
+        </TooltipPortal>
       </Tooltip>
     </TooltipProvider>
   )

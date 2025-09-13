@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
 import type { EventItem } from "@/lib/events"
@@ -37,17 +38,33 @@ function typeColor(type: EventItem["type"], colors: Props["colors"]) {
 }
 
 export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisible = 3 }: Props) {
-  const reduced = events.slice(0, maxVisible)
+  const [showAll, setShowAll] = React.useState(false)
+  const visible = showAll ? events : events.slice(0, maxVisible)
 
   return (
     <div className="space-y-4">
-      <Card className="border-white/10 bg-black/45 backdrop-blur">
-        <CardHeader>
-          <CardTitle className="text-lg text-pretty text-white">Year {year} Detections</CardTitle>
+      <Card className="border-white/10 bg-black/45 backdrop-blur border-b-cyan-300/30">
+        <CardHeader className="bg-gradient-to-b from-black/60 to-transparent">
+          <CardTitle className="text-xl text-pretty text-white font-semibold tracking-tight">
+            Year {year} Detections
+          </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-white/70">
-          Showing {reduced.length} of {events.length} events. Click a card to focus and reveal holographic distances.
-          <div className="mt-2 text-xs text-white/60">
+        <CardContent className="text-base text-white/70">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              Showing {visible.length} of {events.length} events. Click a card to focus and reveal holographic distances.
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAll((s) => !s)}
+                className="text-sm text-cyan-300 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-black rounded px-2 py-1"
+              >
+                {showAll ? "Show less" : "View all"}
+              </button>
+            </div>
+          </div>
+          <div className="mt-2 text-sm text-white/60">
             💡 <AccessibleTooltip term="Detection Confidence" showIcon={false}>
               <span className="underline decoration-dotted decoration-cyan-300/50 underline-offset-2">
                 Hover over underlined terms
@@ -57,9 +74,16 @@ export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisi
         </CardContent>
       </Card>
 
-      <div className="space-y-3 lg:max-h-96 lg:overflow-y-auto lg:pr-2">
+      {/* make the list a flexible container so tooltips can escape and not get clipped */}
+      <div className="space-y-3 max-h-[50vh] overflow-y-auto lg:max-h-[600px] lg:overflow-y-auto lg:pr-2 
+        [&::-webkit-scrollbar]:w-2 
+        [&::-webkit-scrollbar-track]:bg-black/20 
+        [&::-webkit-scrollbar-thumb]:bg-cyan-300/20 
+        [&::-webkit-scrollbar-thumb:hover]:bg-cyan-300/40
+        hover:[&::-webkit-scrollbar-thumb]:bg-cyan-300/30"
+      >
         <AnimatePresence initial={false}>
-          {reduced.map((ev) => {
+          {visible.map((ev) => {
             const c = typeColor(ev.type, colors)
             const pct = Math.round(ev.confidence * 100)
             const isSelected = ev.id === selectedId
@@ -90,27 +114,27 @@ export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisi
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between">
-                          <div className="font-medium text-white">{ev.event}</div>
+                          <div className="font-medium text-white text-base">{ev.event}</div>
                           <AccessibleTooltip term="Detection Confidence">
-                            <div className="text-xs text-white/60 cursor-help">{pct}%</div>
+                            <div className="text-sm text-white/70 cursor-help font-medium">{pct}%</div>
                           </AccessibleTooltip>
                         </div>
 
-                        <p className="mt-1 text-sm leading-relaxed text-white/80">{ev.description}</p>
+                        <p className="mt-2 text-base leading-relaxed text-white/80">{ev.description}</p>
 
                         {/* Simplified layout - just the key info */}
-                        <div className="mt-3 flex items-center justify-between text-sm">
+                        <div className="mt-4 flex items-center justify-between">
                           <AccessibleTooltip term={ev.type}>
-                            <span className="cursor-help text-white/70">
+                            <span className="cursor-help text-white/80 text-sm font-medium">
                               {ev.type}
                             </span>
                           </AccessibleTooltip>
-                          <span className="text-white/50 text-xs">
+                          <span className="text-white/60 text-sm font-mono tracking-tight">
                             {ev.lat.toFixed(1)}°, {ev.lng.toFixed(1)}°
                           </span>
                         </div>
 
-                        <div className="mt-3">
+                        <div className="mt-4">
                           <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
                             <motion.div
                               className="h-full rounded-full"
