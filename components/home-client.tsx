@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Timeline } from "./timeline"
 import { EventPanel } from "./event-panel"
 import { getEventsForYear } from "@/lib/events"
+import type { EventItem } from "@/lib/events"
 import EventFlashes from "./event-flashes"
 import { SelectedEventCoords } from "./selected-event-coords"
 
@@ -17,7 +18,16 @@ const COLORS = {
 
 export default function HomeClient() {
   const [year, setYear] = useState<number>(2021)
-  const events = getEventsForYear(year)
+  const [events, setEvents] = useState<EventItem[]>([])
+
+  // Load events for the selected year
+  useEffect(() => {
+    let mounted = true
+    getEventsForYear(year).then((res) => {
+      if (mounted) setEvents(res)
+    })
+    return () => { mounted = false }
+  }, [year])
 
   return (
     <div
