@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Space Event Timeline',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Team BlueBerry',
+  description: 'Created by Team BlueBerry',
+  generator: 'Team BlueBerry',
 }
 
 export default function RootLayout({
