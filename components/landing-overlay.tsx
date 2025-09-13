@@ -6,6 +6,7 @@ import YearDial from "@/components/year-dial"
 import { EventPanel } from "@/components/event-panel"
 import { getEventsForYear, type EventItem } from "@/lib/events"
 import { FocusOverlay } from "@/components/focus-overlay"
+// Removed visual legend import since it was deleted
 
 export default function LandingOverlay() {
   const years = useMemo(() => Array.from({ length: 11 }, (_, i) => 2015 + i), [])

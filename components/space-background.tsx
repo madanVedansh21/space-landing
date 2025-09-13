@@ -93,13 +93,13 @@ export default function SpaceBackground() {
 
   return (
     <div className="fixed inset-0 z-0">
-      <img
-        src="/images/blackhole-hd.jpg"
-        alt=""
-        aria-hidden="true"
+      <video
+        src="/videos/black hole 3.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
         className="absolute inset-0 h-full w-full object-cover"
-        loading="eager"
-        fetchPriority="high"
       />
       <canvas ref={canvasRef} className="absolute inset-0" aria-hidden="true" />
     </div>
