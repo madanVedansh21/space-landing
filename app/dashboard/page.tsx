@@ -75,7 +75,25 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen w-full bg-black/95 text-white p-24 pt-32">
-      <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+        <div>
+          <button
+            onClick={() => {
+              // Clear the admin cookie and redirect to home
+              try {
+                document.cookie = 'admin_auth=; Max-Age=0; path=/'
+              } catch (e) {
+                // ignore
+              }
+              router.replace('/')
+            }}
+            className="rounded-lg bg-rose-500 hover:bg-rose-400 px-4 py-2 text-white font-semibold"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
       <div className="grid gap-6">
         <div>
           <h2 className="text-2xl font-semibold mb-4">Raw Event Data</h2>
