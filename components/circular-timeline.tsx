@@ -69,23 +69,30 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
       const currentAngle = getAngleFromEvent(e)
       const angleDelta = currentAngle - startAngle
       
-      // Calculate new index based on the angle change, with smoother movement
+      // Calculate new index continuously (smooth movement)
       let normalizedAngle = angleDelta / (Math.PI * 2);
       let indexChange = normalizedAngle * years.length;
-      let newIndex = initialIndex + Math.round(indexChange);
+      let newIndex = initialIndex + indexChange;
       
-      // Normalize index to valid range
+      // Normalize index
       while (newIndex < 0) newIndex += years.length;
       while (newIndex >= years.length) newIndex -= years.length;
       
-      // Smooth the transition by using requestAnimationFrame
       requestAnimationFrame(() => {
-        setCurrentIndex(newIndex);
-      });
+        setCurrentIndex(Math.round(newIndex))
+      })
     }
 
     const onPointerUp = () => {
       setIsDragging(false)
+
+      // Snap to nearest year
+      setCurrentIndex(prev => {
+        let newIndex = Math.round(prev)
+        if (newIndex < 0) newIndex = 0
+        if (newIndex >= years.length) newIndex = years.length - 1
+        return newIndex
+      })
     }
 
     // Add event listeners
@@ -106,6 +113,31 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
     }
   }, [isDragging, years.length, currentIndex])
 
+  // Scroll wheel navigation (1 year per gesture)
+  useEffect(() => {
+    if (!containerRef.current) return
+    const container = containerRef.current
+
+    let deltaYAccumulator = 0
+    const SCROLL_THRESHOLD = 30
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      deltaYAccumulator += e.deltaY
+
+      if (deltaYAccumulator > SCROLL_THRESHOLD) {
+        setCurrentIndex(prev => (prev + 1) % years.length)
+        deltaYAccumulator = 0
+      } else if (deltaYAccumulator < -SCROLL_THRESHOLD) {
+        setCurrentIndex(prev => (prev - 1 + years.length) % years.length)
+        deltaYAccumulator = 0
+      }
+    }
+
+    container.addEventListener("wheel", onWheel, { passive: false })
+    return () => container.removeEventListener("wheel", onWheel)
+  }, [years.length])
+
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
@@ -119,7 +151,6 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
 
   // Calculate positions for each year marker
   const getMarkerPosition = (index: number, radius: number) => {
-    // Adjust angle to start from top and go clockwise
     const angle = (index / years.length) * Math.PI * 2 - Math.PI / 2
     return {
       x: 50 + radius * Math.cos(angle),
@@ -128,18 +159,16 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
   }
 
   // Get current progress for the outer ring
-  const circumference = 2 * Math.PI * 40;
-  const progress = (currentIndex / years.length) * circumference;
+  const circumference = 2 * Math.PI * 40
+  const progress = (currentIndex / years.length) * circumference
 
-  // Function to handle direct clicks on year markers
   const handleMarkerClick = (index: number) => {
-    setIsDragging(false);
-    setCurrentIndex(index);
-  };
+    setIsDragging(false)
+    setCurrentIndex(index)
+  }
 
   return (
-    <div className="relative w-56 mx-auto select-none"> {/* was w-64 */}
-      {/* Main circular container */}
+    <div className="relative w-64 mx-auto select-none">
       <motion.div
         ref={containerRef}
         className="relative w-full aspect-square rounded-full bg-gradient-to-br from-slate-900 via-black to-slate-900 border border-white/10 shadow-lg cursor-grab active:cursor-grabbing"
@@ -149,8 +178,8 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
             inset 0 0 50px rgba(255, 255, 255, 0.03)
           `
         }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={{ scale: 1.0 }}
+        whileTap={{ scale: 1.00 }}
         onKeyDown={handleKeyDown}
         tabIndex={0}
         role="slider"
@@ -159,7 +188,7 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
         aria-valuenow={years[currentIndex]}
         aria-label="Timeline year selector"
       >
-        {/* Outer glow effect */}
+        {/* Outer glow */}
         <motion.div
           className="absolute inset-0 rounded-full opacity-0 pointer-events-none"
           animate={{ 
@@ -171,10 +200,10 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
             background: `radial-gradient(circle, ${glow}33 0%, transparent 70%)`,
             filter: "blur(20px)"
           }}
-        />        {/* Circular track */}
+        />
+
         <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
           <defs>
-            {/* Glow effects */}
             <filter id="glow-strong" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
               <feMerge>
@@ -188,7 +217,6 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
               <feComposite in="SourceGraphic" in2="blur" operator="over"/>
             </filter>
 
-            {/* Gradients */}
             <linearGradient id="track-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor={primary} stopOpacity="0.8" />
               <stop offset="100%" stopColor={accent} stopOpacity="0.8" />
@@ -200,10 +228,8 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
             </radialGradient>
           </defs>
 
-          {/* Background circle */}
           <circle cx="50" cy="50" r="48" fill="rgba(0,0,0,0.7)" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
 
-          {/* Progress track */}
           <motion.circle
             cx="50"
             cy="50"
@@ -218,13 +244,12 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
             style={{ transform: 'rotate(-90deg)', transformOrigin: 'center' }}
             transition={{ 
               type: "spring", 
-              stiffness: 60,  // Reduced for smoother motion
-              damping: 12,    // Adjusted for more natural feel
-              mass: 0.5       // Added mass for smoother physics
+              stiffness: 50, 
+              damping: 14, 
+              mass: 0.6
             }}
           />
 
-          {/* Year markers */}
           {years.map((year, index) => {
             const position = getMarkerPosition(index, 35)
             const isActive = index === currentIndex
@@ -232,7 +257,6 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
             
             return (
               <g key={year} transform={`translate(${position.x}, ${position.y})`}>
-                {/* Connection line to center */}
                 <line
                   x1={0}
                   y1={0}
@@ -243,7 +267,6 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
                   opacity={isActive ? 0.6 : 0.3}
                 />
 
-                {/* Year marker */}
                 <motion.circle
                   r={isActive ? 3.5 : isHovered ? 3 : 2}
                   fill={isActive ? accent : "rgba(255,255,255,0.6)"}
@@ -273,7 +296,6 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
                   style={{ cursor: "pointer" }}
                 />
 
-                {/* Year label */}
                 {(isActive || isHovered) && (
                   <motion.text
                     x={0}
@@ -295,7 +317,6 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
             )
           })}
 
-          {/* Center element */}
           <motion.circle
             cx="50"
             cy="50"
@@ -314,46 +335,36 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
           <circle cx="50" cy="50" r="8" fill="url(#center-glow)" opacity="0.7" />
         </svg>
 
-        {/* Central display */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+          {/* Static label */}
+          <div className="text-xs uppercase tracking-widest text-white/90 mb-1">
+            Year
+          </div>
+
+          {/* Animated year number */}
           <AnimatePresence mode="wait">
             <motion.div
               key={years[currentIndex]}
-              className="text-center"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent"
             >
-              <div className="text-[10px] uppercase tracking-widest text-white/60 mb-0.5">Year</div>
-              <motion.div 
-                className="text-xl font-bold bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent"
-                animate={{ 
-                  textShadow: [
-                    `0 0 10px ${primary}44`,
-                    `0 0 20px ${accent}88`,
-                    `0 0 10px ${primary}44`
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                {years[currentIndex]}
-              </motion.div>
+              {years[currentIndex]}
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Drag instructions */}
+
         <motion.div
-          className="absolute bottom-5 left-1/2 transform -translate-x-1/2 text-[10px] text-white/40"
+          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-white/40"
           animate={{ opacity: isDragging ? 0 : 1 }}
           transition={{ duration: 0.3 }}
         >
-          Drag to navigate
+          Scroll/Drag to navigate
         </motion.div>
       </motion.div>
-
-
     </div>
   )
 }
