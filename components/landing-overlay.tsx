@@ -1,28 +1,22 @@
 "use client"
 
-import { useMemo, useState, useEffect } from "react"
+import { useMemo, useState, useEffect, useRef } from "react"
 import EventFlashes from "@/components/event-flashes"
 import CircularTimeline from "@/components/circular-timeline"
 import { EventPanel } from "@/components/event-panel"
 import { getEventsForYear, type EventItem } from "@/lib/events"
 import { FocusOverlay } from "@/components/focus-overlay"
-import { useRouter } from "next/navigation"
 // Removed visual legend import since it was deleted
 
 export default function LandingOverlay() {
-  const router = useRouter()
   const years = useMemo(() => Array.from({ length: 11 }, (_, i) => 2015 + i), [])
   const [year, setYear] = useState<number>(2020)
   const [events, setEvents] = useState<EventItem[]>([])
   const [selected, setSelected] = useState<EventItem | undefined>(undefined)
+  const [focusOpen, setFocusOpen] = useState(false)
+  const lastSelectedRef = useRef<EventItem | undefined>(undefined)
 
-  // Check authentication on mount
-  useEffect(() => {
-    const isAdmin = document.cookie.includes('admin_auth=true')
-    if (!isAdmin) {
-      router.push('/admin')
-    }
-  }, [])
+  // No admin redirects here—landing must always load
 
   useEffect(() => {
     async function fetchEvents() {
@@ -82,7 +76,11 @@ export default function LandingOverlay() {
               year={year}
               events={events}
               colors={colors}
-              onSelect={(ev) => setSelected(ev)}
+              onSelect={(ev) => {
+                setSelected(ev)
+                lastSelectedRef.current = ev
+                setFocusOpen(true)
+              }}
               selectedId={selected?.id}
               maxVisible={10}
             />
@@ -97,12 +95,13 @@ export default function LandingOverlay() {
           value={year}
           onChange={(y) => {
             setYear(y)
-            setSelected(undefined)
           }}
         />
       </div>
 
-      <FocusOverlay selected={selected} onClose={() => setSelected(undefined)} />
+      {focusOpen && (
+        <FocusOverlay selected={lastSelectedRef.current} onClose={() => setFocusOpen(false)} />
+      )}
     </div>
   )
 }

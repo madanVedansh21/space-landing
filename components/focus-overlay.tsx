@@ -18,6 +18,11 @@ export function FocusOverlay({
 }) {
   const [showExplanation, setShowExplanation] = useState(false)
   const [highlightedArc, setHighlightedArc] = useState<'angular' | 'spatial' | null>(null)
+  const [mounted, setMounted] = useState(false)
+  const safeNum = (v: unknown, fallback = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback)
+  const angularDeg = safeNum((selected as any)?.angular_distance_deg, 0)
+  const spatialMlyRaw = (selected as any)?.spatial_distance_mly
+  const spatialMly = typeof spatialMlyRaw === 'number' && Number.isFinite(spatialMlyRaw) ? spatialMlyRaw : null
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -27,16 +32,29 @@ export function FocusOverlay({
     return () => window.removeEventListener("keydown", onKey)
   }, [onClose])
 
+  // Avoid closing immediately from the original click that opened the overlay
+  useEffect(() => {
+    if (selected) {
+      const id = requestAnimationFrame(() => setMounted(true))
+      return () => {
+        cancelAnimationFrame(id)
+        setMounted(false)
+      }
+    } else {
+      setMounted(false)
+    }
+  }, [selected])
+
   return (
     <AnimatePresence>
       {selected && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-[100] pointer-events-auto">
           <motion.div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            // No backdrop click to close; use X button or Escape key
           />
 
           <FocusVizCentered 
@@ -46,7 +64,7 @@ export function FocusOverlay({
           />
           
           {/* Close button - now bigger and top right */}
-          <div className="absolute top-6 right-12 z-60">
+          <div className="absolute top-6 right-12 z-[120]">
             <Button
               variant="ghost"
               size="icon"
@@ -60,7 +78,7 @@ export function FocusOverlay({
 
           {/* Left panel - Inner Arc */}
           <motion.div 
-            className="absolute left-[15%] top-1/2 -translate-y-1/2 z-60 max-w-[320px]"
+            className="absolute left-[15%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -72,10 +90,10 @@ export function FocusOverlay({
                   <div>
                     <h4 className="font-semibold text-amber-300 text-lg">Inner Arc - Angular Distance</h4>
                     <p className="text-base text-white/90 mt-2">
-                      How large the event appears in our sky: <strong>{selected.angular_distance_deg.toFixed(2)}°</strong>
+                      How large the event appears in our sky: <strong>{Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : 'N/A'}°</strong>
                     </p>
                     <p className="text-sm text-amber-300/90 mt-2">
-                      {getAngularAnalogy(selected.angular_distance_deg)}
+                      {Number.isFinite(angularDeg) ? getAngularAnalogy(angularDeg) : 'Angular size not available'}
                     </p>
                   </div>
                 </div>
@@ -85,7 +103,7 @@ export function FocusOverlay({
 
           {/* Right panel - Outer Arc */}
           <motion.div 
-            className="absolute right-[15%] top-1/2 -translate-y-1/2 z-60 max-w-[320px]"
+            className="absolute right-[15%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
@@ -98,14 +116,14 @@ export function FocusOverlay({
                     <h4 className="font-semibold text-cyan-300 text-lg">Outer Arc - Spatial Distance</h4>
                     <p className="text-base text-white/90 mt-2">
                       How far away the event actually is: <strong>
-                        {selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
-                          ? `${selected.spatial_distance_mly.toLocaleString()} million light-years`
+                        {spatialMly !== null
+                          ? `${spatialMly.toLocaleString()} million light-years`
                           : 'N/A million light-years'}
                       </strong>
                     </p>
                     <p className="text-sm text-cyan-300/90 mt-2">
-                      {selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
-                        ? getDistanceAnalogy(selected.spatial_distance_mly)
+                      {spatialMly !== null
+                        ? getDistanceAnalogy(spatialMly)
                         : 'In the distant universe'}
                     </p>
                   </div>
@@ -116,7 +134,7 @@ export function FocusOverlay({
 
           {/* Lighthouse analogy at bottom */}
           <motion.div 
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-60 max-w-[600px] w-full px-4"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-[110] max-w-[600px] w-full px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -155,14 +173,21 @@ function FocusVizCentered({
 
   // Adjust the visualization to be slightly more compact to prevent overlap
   // Scale factor based on confidence - more confident events get larger visualizations
-  const scaleFactor = 0.9 - (selected.confidence * 0.15)
+  const safeNum = (v: unknown, fallback = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback)
+  const confidence = safeNum(selected.confidence, 0.5)
+  const angularDeg = safeNum((selected as any).angular_distance_deg, 0)
+  const spatialMlyRaw = (selected as any).spatial_distance_mly
+  const spatialMly = typeof spatialMlyRaw === 'number' && Number.isFinite(spatialMlyRaw) ? spatialMlyRaw : null
+
+  const scaleFactor = 0.9 - (confidence * 0.15)
   
   // Clamp radii to prevent them from becoming too large and going off-screen
   // Reduced maximum values to prevent overlaps
-  const rAngular = Math.min(180, (80 + selected.angular_distance_deg * 8) * scaleFactor)
-  const rSpatial = selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
-    ? Math.min(380, (rAngular + 60 + selected.spatial_distance_mly * 0.4) * scaleFactor)
-    : Math.min(380, (rAngular + 60) * scaleFactor)
+  const rAngularBase = 80 + angularDeg * 8
+  const rAngular = Math.min(180, Math.max(40, rAngularBase * scaleFactor))
+  const rSpatial = spatialMly !== null
+    ? Math.min(380, Math.max(120, (rAngular + 60 + spatialMly * 0.4) * scaleFactor))
+    : Math.min(380, Math.max(120, (rAngular + 60) * scaleFactor))
 
   const arc = (r: number) => {
     const sweep = 300
@@ -176,7 +201,7 @@ function FocusVizCentered({
   return (
     <motion.svg
       viewBox="0 0 1000 1000"
-      className="absolute inset-0 z-50 h-full w-full"
+      className="absolute inset-0 z-[105] h-full w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -254,7 +279,7 @@ function FocusVizCentered({
           transition={{ duration: 0.2 }}
         >
           <textPath href="#angularPath" startOffset="50%" textAnchor="middle">
-            {selected.angular_distance_deg.toFixed(2)}°
+            {Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : 'N/A'}°
           </textPath>
         </motion.text>
 
@@ -281,9 +306,7 @@ function FocusVizCentered({
           transition={{ duration: 0.2 }}
         >
           <textPath href="#spatialPath" startOffset="50%" textAnchor="middle">
-            {selected.spatial_distance_mly !== null && selected.spatial_distance_mly !== undefined && !isNaN(selected.spatial_distance_mly)
-              ? `${selected.spatial_distance_mly} Mly`
-              : 'N/A Mly'}
+            {spatialMly !== null ? `${spatialMly} Mly` : 'N/A Mly'}
           </textPath>
         </motion.text>
         
@@ -332,7 +355,7 @@ function FocusVizCentered({
           className="font-semibold" 
           filter="url(#glow-strong)"
         >
-          {selected.event}
+          {String((selected as any).event || 'Unknown Event')}
         </text>
         
         {/* Coordinates right below title */}
@@ -344,7 +367,7 @@ function FocusVizCentered({
           textAnchor="middle" 
           className="uppercase tracking-wider opacity-70" 
         >
-          RA {selected.lng.toFixed(2)}° / DEC {selected.lat.toFixed(2)}°
+          RA {safeNum((selected as any).lng, 0).toFixed(2)}° / DEC {safeNum((selected as any).lat, 0).toFixed(2)}°
         </text>
       </motion.g>
 
