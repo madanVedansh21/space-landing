@@ -63,7 +63,7 @@ export default function DashboardPage() {
       }
     }
     fetchData()
-  }, [])
+  }, [authChecked])
 
   if (!authChecked) {
     return (
@@ -84,6 +84,14 @@ export default function DashboardPage() {
           ) : (
             <DataTable data={data} />
           )}
+          <div className="mt-6">
+            <button
+              className="rounded-lg bg-cyan-500 hover:bg-cyan-400 px-6 py-2 text-white font-semibold"
+              onClick={() => console.log('Submit Data clicked')}
+            >
+              Submit Data
+            </button>
+          </div>
         </div>
       </div>
     </main>

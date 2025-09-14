@@ -35,13 +35,18 @@ export default function AdminLoginDialog({ isOpen, onClose }: AdminLoginDialogPr
       })
 
       if (response.ok) {
-        onClose()
-        // Add a small delay to ensure cookie is set before navigation
-        await new Promise(resolve => setTimeout(resolve, 100))
-        router.replace("/dashboard")
+        // Wait a tiny amount to allow cookie to be set, then verify
+        await new Promise((r) => setTimeout(r, 120))
+        const isAdmin = document.cookie.includes('admin_auth=true')
+        if (isAdmin) {
+          onClose()
+          router.replace('/dashboard')
+        } else {
+          setError('Login succeeded but cookie not present. Try again.')
+        }
       } else {
         const data = await response.json()
-        setError(data.message || "Invalid credentials")
+        setError(data.error || data.message || "Invalid credentials")
       }
     } catch (err) {
       setError("Something went wrong. Please try again.")

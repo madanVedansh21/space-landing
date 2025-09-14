@@ -15,7 +15,7 @@ export default function Navbar() {
 
   const handleAdminClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    const isAdmin = document.cookie.includes('admin_auth=true')
+    const isAdmin = typeof document !== 'undefined' && document.cookie.includes('admin_auth=true')
     if (isAdmin) {
       router.push('/dashboard')
     } else {
