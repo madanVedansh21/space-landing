@@ -1,0 +1,10 @@
+# API Endpoints
+
+## GET
+/api/getalldata
+/api/correlated
+
+## POST
+/api/submit
+
+# 

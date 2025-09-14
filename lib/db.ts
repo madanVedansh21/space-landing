@@ -9,8 +9,6 @@ const connectToDatabase = async () => {
     // check if the MONGODB_URI is not undefined
     if (!MONGODB_URI) {
         console.log("there was error loading MONGODB_URI from the .env folder ");
-    } else {
-        console.log("MONGODB_URI value:", MONGODB_URI);
     }
 
      // now check if the connection is already established
