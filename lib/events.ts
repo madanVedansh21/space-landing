@@ -32,7 +32,7 @@ interface ApiResponse {
 // This function now fetches and processes real data from the backend.
 export async function getEventsForYear(year: number): Promise<EventItem[]> {
   try {
-    const response = await fetch('http://localhost:3000/api/correlated');
+    const response = await fetch('/api/correlated');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -41,6 +41,8 @@ export async function getEventsForYear(year: number): Promise<EventItem[]> {
     if (result.success && Array.isArray(result.data)) {
       const allEvents = result.data;
 
+
+      
       const filteredEvents = allEvents.filter((event: CorrelatedEvent) => {
         const eventYear = new Date(event.gw_time).getFullYear();
         return eventYear === year;
