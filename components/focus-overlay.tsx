@@ -83,22 +83,22 @@ export function FocusOverlay({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
           >
-            <Card className="border-white/10 bg-black/70 backdrop-blur">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3 rounded-lg bg-amber-500/10 border border-amber-500/20 p-4">
-                  <div className="w-3 h-3 rounded-full bg-amber-300 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-amber-300 text-lg">Inner Arc - Angular Distance</h4>
-                    <p className="text-base text-white/90 mt-2">
-                      How large the event appears in our sky: <strong>{Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : 'N/A'}°</strong>
-                    </p>
-                    <p className="text-sm text-amber-300/90 mt-2">
-                      {Number.isFinite(angularDeg) ? getAngularAnalogy(angularDeg) : 'Angular size not available'}
-                    </p>
-                  </div>
+            <div className="relative">
+              <div className="absolute inset-0 rounded-lg bg-black/70 backdrop-blur border border-white/10" />
+              <div className="flex items-start gap-3 rounded-lg bg-amber-500/10 border border-amber-500/20 p-4 relative">
+                <div className="w-3 h-3 rounded-full bg-amber-300 mt-1 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-amber-300 text-lg">Inner Arc - Angular Distance</h4>
+                  <p className="text-base text-white/90 mt-2">
+                    How large the event appears in our sky: <strong>{Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : 'N/A'}°</strong>
+                  </p>
+                  <p className="text-sm text-amber-300/90 mt-2">
+                    {Number.isFinite(angularDeg) ? getAngularAnalogy(angularDeg) : 'Angular size not available'}
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+
           </motion.div>
 
           {/* Right panel - Outer Arc */}
@@ -108,9 +108,12 @@ export function FocusOverlay({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
           >
-            <Card className="border-white/10 bg-black/70 backdrop-blur">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20 p-4">
+              <div className="relative rounded-lg">
+                {/* Black background layer */}
+                <div className="absolute inset-0 rounded-lg bg-black/70 backdrop-blur border border-white/10" />
+
+                {/* Cyan card layer */}
+                <div className="flex items-start gap-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20 p-4 relative">
                   <div className="w-3 h-3 rounded-full bg-cyan-300 mt-1 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold text-cyan-300 text-lg">Outer Arc - Spatial Distance</h4>
@@ -128,8 +131,8 @@ export function FocusOverlay({
                     </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
           </motion.div>
 
           {/* Lighthouse analogy at bottom */}
@@ -141,8 +144,8 @@ export function FocusOverlay({
           >
             
               <CardContent className="p-6">
-                <div className="flex items-start gap-3 rounded-lg bg-black/40 border border-white/10 p-8">
-                  <p className="text-base text-white/80">
+                <div className="flex items-start gap-3 rounded-3xl bg-black/40 border border-white/10 p-6">
+                  <p className="text-base text-white/90">
                     <strong>💡 Think of it like a lighthouse:</strong> The inner arc shows how bright it appears to you, 
                     while the outer arc shows how far away it actually is. A nearby dim lighthouse might appear 
                     as bright as a distant powerful one!

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Timeline } from "./timeline"
 import { EventPanel } from "./event-panel"
 import { getEventsForYear } from "@/lib/events"
 import type { EventItem } from "@/lib/events"
@@ -80,15 +79,6 @@ export default function HomeClient() {
           <aside className="md:col-span-1">
             <EventPanel year={year} events={events} colors={COLORS} />
           </aside>
-        </div>
-      </div>
-
-      <div
-        className="sticky bottom-0 w-full backdrop-blur"
-        style={{ backgroundColor: "rgba(11,16,32,0.6)", borderTop: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="mx-auto max-w-6xl px-6 py-3 md:px-10">
-          <Timeline min={2015} max={2025} value={year} onChange={setYear} colors={COLORS} />
         </div>
       </div>
 

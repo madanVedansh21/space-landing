@@ -138,7 +138,7 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
   };
 
   return (
-    <div className="relative w-64 mx-auto select-none">
+    <div className="relative w-56 mx-auto select-none"> {/* was w-64 */}
       {/* Main circular container */}
       <motion.div
         ref={containerRef}
@@ -325,9 +325,9 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <div className="text-xs uppercase tracking-widest text-white/60 mb-1">Year</div>
+              <div className="text-[10px] uppercase tracking-widest text-white/60 mb-0.5">Year</div>
               <motion.div 
-                className="text-2xl font-bold bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent"
+                className="text-xl font-bold bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent"
                 animate={{ 
                   textShadow: [
                     `0 0 10px ${primary}44`,
@@ -345,7 +345,7 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
 
         {/* Drag instructions */}
         <motion.div
-          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-white/40"
+          className="absolute bottom-5 left-1/2 transform -translate-x-1/2 text-[10px] text-white/40"
           animate={{ opacity: isDragging ? 0 : 1 }}
           transition={{ duration: 0.3 }}
         >
