@@ -2,7 +2,7 @@ import {connectToDatabase} from "@/lib/db";
 import { NextResponse } from "next/server";
 import CorrelatedData from "@/lib/models/correlated.models";
 
-// GET localhost:3000/api/correlated
+// GET /api/correlated
 export async function GET() {
 	try {
 		// Log whether the environment variable is present (do NOT log the value)

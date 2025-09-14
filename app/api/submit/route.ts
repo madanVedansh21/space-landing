@@ -2,15 +2,23 @@ import { NextResponse } from "next/server";
 import CorrelatedData from "@/lib/models/correlated.models";
 import { connectToDatabase } from "@/lib/db";
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
 
-    // Send data to Python service
+    // Read the file as a buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const csvBuffer = Buffer.from(arrayBuffer);
+
+    // Send the CSV file to the Python service
     const pythonRes = await fetch("http://localhost:5000/correlate", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      headers: { "Content-Type": "text/csv" },
+      body: csvBuffer,
     });
 
     if (!pythonRes.ok) {
@@ -21,7 +29,7 @@ export async function POST(request: Request) {
 
     // Store in DB (example, adjust as per your schema)
     await connectToDatabase();
-    const saved = await CorrelatedData.create({ input: body, result: correlatedData });
+    const saved = await CorrelatedData.create({ input: {}, result: correlatedData });
 
     return NextResponse.json({ success: true, data: saved });
   } catch (err) {
