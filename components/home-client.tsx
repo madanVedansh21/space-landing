@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { EventPanel } from "./event-panel"
 import { getEventsForYear } from "@/lib/events"
 import type { EventItem } from "@/lib/events"
-import EventFlashes from "./event-flashes"
 import { SelectedEventCoords } from "./selected-event-coords"
 
 const COLORS = {
@@ -82,7 +81,6 @@ export default function HomeClient() {
         </div>
       </div>
 
-      <EventFlashes events={events} selected={undefined} />
       <SelectedEventCoords selected={undefined} />
     </div>
   )

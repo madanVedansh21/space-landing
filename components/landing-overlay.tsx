@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo, useState, useEffect, useRef } from "react"
-import EventFlashes from "@/components/event-flashes"
 import CircularTimeline from "@/components/circular-timeline"
 import { EventPanel } from "@/components/event-panel"
 import { getEventsForYear, type EventItem } from "@/lib/events"
@@ -43,7 +42,6 @@ export default function LandingOverlay() {
 
   return (
     <div className="relative min-h-dvh">
-      <EventFlashes events={events} selected={selected} showDetailOverlay={!!selected} />
 
       {/* Main content grid - responsive layout */}
       <div className="relative z-10 grid min-h-dvh grid-cols-1 lg:grid-cols-2">
