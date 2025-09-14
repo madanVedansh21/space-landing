@@ -2,13 +2,27 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Info, PlusCircle } from "lucide-react"
+import AdminLoginDialog from "./admin-login-dialog"
 
 export default function Navbar() {
   const pathname = usePathname()
+  const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const router = useRouter()
 
+  const handleAdminClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const isAdmin = document.cookie.includes('admin_auth=true')
+    if (isAdmin) {
+      router.push('/dashboard')
+    } else {
+      setShowLoginDialog(true)
+    }
+  }
+  
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -31,13 +45,18 @@ export default function Navbar() {
         </div>
 
         <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-6">
-          <Link
-            href="/admin"
-            className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition-transform transform-gpu ${pathname === '/admin' ? 'bg-black/55 ring-1 ring-cyan-300 scale-105' : 'bg-black/35 hover:bg-black/50 hover:-translate-y-1 hover:scale-105'}`}
+          <button
+            onClick={handleAdminClick}
+            className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition-transform transform-gpu ${pathname === '/dashboard' ? 'bg-black/55 ring-1 ring-cyan-300 scale-105' : 'bg-black/35 hover:bg-black/50 hover:-translate-y-1 hover:scale-105'}`}
           >
             <PlusCircle className="h-7 w-7 text-cyan-300" />
             <span className="text-base md:text-lg text-white/95 font-semibold">Admin</span>
-          </Link>
+          </button>
+
+          <AdminLoginDialog 
+            isOpen={showLoginDialog}
+            onClose={() => setShowLoginDialog(false)}
+          />
 
           <Link
             href="/about"
