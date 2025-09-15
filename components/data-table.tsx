@@ -47,11 +47,10 @@ export default function DataTable({ data, type }: DataTableProps) {
               {type === 'gw' ? (
                 <>
                   <TableHead className="text-white">Event ID</TableHead>
-                  <TableHead className="text-white">Time</TableHead>
-                  <TableHead className="text-white">RA</TableHead>
-                  <TableHead className="text-white">Dec</TableHead>
-                  <TableHead className="text-white">SNR</TableHead>
-                  <TableHead className="text-white">Pos Error</TableHead>
+                  <TableHead className="text-white">Source</TableHead>
+                  <TableHead className="text-white">Event Type</TableHead>
+                  <TableHead className="text-white">UTC Time</TableHead>
+                  <TableHead className="text-white">Signal Strength</TableHead>
                 </>
               ) : type === 'grb' ? (
                 <>
@@ -71,16 +70,15 @@ export default function DataTable({ data, type }: DataTableProps) {
           </TableHeader>
           <TableBody>
             {type === 'gw' && Array.isArray(data)
-              ? (data as GWEvent[]).map((event) => (
-                  <TableRow key={event._id} className="hover:bg-white/5">
+              ? data.map((event: any) => (
+                  <TableRow key={event._id || event.event_id} className="hover:bg-white/5">
                     <TableCell className="text-white">{event.event_id}</TableCell>
+                    <TableCell className="text-white">{event.source}</TableCell>
+                    <TableCell className="text-white">{event.event_type}</TableCell>
                     <TableCell className="text-white text-muted-foreground">
-                      {formatDistanceToNow(new Date(event.time), { addSuffix: true })}
+                      {event.utc_time ? event.utc_time : "-"}
                     </TableCell>
-                    <TableCell className="text-white">{event.ra}</TableCell>
-                    <TableCell className="text-white">{event.dec}</TableCell>
-                    <TableCell className="text-white">{event.snr}</TableCell>
-                    <TableCell className="text-white">{event.pos_error}</TableCell>
+                    <TableCell className="text-white">{event.signal_strength}</TableCell>
                   </TableRow>
                 ))
               : type === 'grb' && Array.isArray(data)
@@ -88,7 +86,7 @@ export default function DataTable({ data, type }: DataTableProps) {
                   <TableRow key={event._id} className="hover:bg-white/5">
                     <TableCell className="text-white">{event.event_id}</TableCell>
                     <TableCell className="text-white text-muted-foreground">
-                      {formatDistanceToNow(new Date(event.time), { addSuffix: true })}
+                      {event.time ? formatDistanceToNow(new Date(event.time)) : "-"}
                     </TableCell>
                     <TableCell className="text-white">{event.ra}</TableCell>
                     <TableCell className="text-white">{event.dec}</TableCell>
