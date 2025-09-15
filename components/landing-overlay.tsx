@@ -42,17 +42,16 @@ export default function LandingOverlay() {
 
   return (
     <div className="relative min-h-dvh">
-
       {/* Main content grid - responsive layout */}
       <div className="relative z-10 grid min-h-dvh grid-cols-1 lg:grid-cols-2">
-        {/* Left side - Title and summary */}
-        <section className="flex flex-col justify-center px-4 py-8 lg:px-8">
+        {/* Left side - Title, summary, and timeline */}
+        <section className="flex flex-col justify-center px-4 pt-16 pb-8 lg:px-8">
           <div className="mx-auto max-w-lg text-center lg:text-left">
             <h1 className="text-pretty text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
               Space Event Timeline
             </h1>
             <p className="mt-3 text-balance text-lg text-white/85 lg:text-xl">
-              Live black hole backdrop with twinkling stars. Drag the dial to explore yearly detections.
+              Drag or scroll the dial to explore yearly detections.
             </p>
 
             {/* Event summary */}
@@ -64,11 +63,25 @@ export default function LandingOverlay() {
                 </div>
               ))}
             </div>
+
+            {/* Circular timeline moved here, slightly smaller */}
+            <div className="mt-8 flex justify-center lg:justify-start">
+              <div style={{ width: '13rem', maxWidth: '100%' }}>
+                <CircularTimeline
+                  years={years}
+                  value={year}
+                  onChange={(y) => {
+                    setYear(y)
+                  }}
+                  colors={{ primary: colors.primary, accent: colors.accentYellow, glow: colors.accentPurple }}
+                />
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Right side - Event details */}
-        <section className="flex flex-col px-4 py-8 lg:px-8">
+        {/* Right side - Event details, shifted down */}
+        <section className="flex flex-col px-4 pt-28 pb-8 lg:px-8">
           <div className="mx-auto w-full max-w-lg lg:h-full lg:overflow-y-auto lg:py-8">
             <EventPanel
               year={year}
@@ -81,22 +94,14 @@ export default function LandingOverlay() {
               }}
               selectedId={selected?.id}
               maxVisible={10}
+              cardSize="sm"
+              emphasizeTitle
             />
           </div>
         </section>
       </div>
 
-      {/* Bottom circular timeline - always visible */}
-      <div className="pointer-events-auto fixed inset-x-0 bottom-0 z-40">
-        <CircularTimeline
-          years={years}
-          value={year}
-          onChange={(y) => {
-            setYear(y)
-          }}
-        />
-      </div>
-
+      {/* Focus overlay remains unchanged */}
       {focusOpen && (
         <FocusOverlay selected={lastSelectedRef.current} onClose={() => setFocusOpen(false)} />
       )}
