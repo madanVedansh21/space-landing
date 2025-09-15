@@ -61,7 +61,8 @@ export default function AdminLoginDialog({ isOpen, onClose }: AdminLoginDialogPr
         <DialogHeader>
           <DialogTitle>Admin Login</DialogTitle>
           <DialogDescription className="text-white/60">
-            Enter your credentials to access the admin dashboard.
+            Username = "space" <br></br>
+            Password = "space"
           </DialogDescription>
         </DialogHeader>
 

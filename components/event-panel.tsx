@@ -178,7 +178,7 @@ export function EventPanel({
                             </span>
                           </AccessibleTooltip>
                           <span className="text-white/60 text-xs md:text-sm font-mono tracking-tight">
-                            {ev.lat.toFixed(1)}°, {ev.lng.toFixed(1)}°
+                            {ev.lat != null ? ev.lat.toFixed(1) : "-"}°, {ev.lng != null ? ev.lng.toFixed(1) : "-"}°
                           </span>
                         </div>
 
