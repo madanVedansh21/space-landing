@@ -62,7 +62,7 @@ export function EventPanel({
   const cardTitleBg = emphasizeTitle
 
   return (
-    <div className="space-y-3 pb-4">
+    <div className="space-y-3 pb-2">
       {/* Header Card */}
       <Card
         className={`relative overflow-hidden border border-white/10 ${cardRadius} shadow-lg

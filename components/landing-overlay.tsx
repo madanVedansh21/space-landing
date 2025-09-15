@@ -96,7 +96,7 @@ export default function LandingOverlay() {
 
         {/* Right side - Event details, shifted down */}
         <section className="flex flex-col px-4 pt-20 pb-8 lg:px-8">
-          <div className="mx-auto w-full max-w-lg lg:h-full lg:overflow-y-auto lg:py-8">
+          <div className="mx-auto w-full max-w-lg lg:h-full lg:overflow-y-auto lg:py-2">
             <EventPanel
               year={year}
               events={events}
