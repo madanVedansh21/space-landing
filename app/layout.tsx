@@ -17,13 +17,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Only wrap the home page ('/') with HomeLayout
+  // For other routes, render children directly
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isHome = pathname === '/';
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Navbar />
-        <HomeLayout>
-          {children}
-        </HomeLayout>
+        {typeof window !== 'undefined' && isHome ? (
+          <HomeLayout>
+            {children}
+          </HomeLayout>
+        ) : (
+          children
+        )}
         <Analytics />
       </body>
     </html>
