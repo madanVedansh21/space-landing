@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { EventItem } from "@/lib/events"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { XIcon, InfoIcon, ArrowLeftIcon } from "lucide-react"
-import { AccessibleTooltip } from "@/components/ui/accessible-tooltip"
-import { getDistanceAnalogy, getAngularAnalogy } from "@/lib/accessibility-helpers"
+import { XIcon } from "lucide-react"
+import { getAngularAnalogy } from "@/lib/accessibility-helpers"
 
 export function FocusOverlay({
   selected,
@@ -16,13 +15,18 @@ export function FocusOverlay({
   selected?: EventItem
   onClose: () => void
 }) {
-  const [showExplanation, setShowExplanation] = useState(false)
-  const [highlightedArc, setHighlightedArc] = useState<'angular' | 'spatial' | null>(null)
+  const [highlightedArc, setHighlightedArc] = useState<'angular' | 'time' | null>(null)
   const [mounted, setMounted] = useState(false)
-  const safeNum = (v: unknown, fallback = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback)
+
+  const safeNum = (v: unknown, fallback = 0) =>
+    typeof v === "number" && Number.isFinite(v) ? v : fallback
+
   const angularDeg = safeNum((selected as any)?.angular_distance_deg, 0)
-  const spatialMlyRaw = (selected as any)?.spatial_distance_mly
-  const spatialMly = typeof spatialMlyRaw === 'number' && Number.isFinite(spatialMlyRaw) ? spatialMlyRaw : null
+  const timeDiffHoursRaw = (selected as any)?.time_diff_hours
+  const timeDiffHours =
+    typeof timeDiffHoursRaw === "number" && Number.isFinite(timeDiffHoursRaw)
+      ? timeDiffHoursRaw
+      : null
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -32,7 +36,6 @@ export function FocusOverlay({
     return () => window.removeEventListener("keydown", onKey)
   }, [onClose])
 
-  // Avoid closing immediately from the original click that opened the overlay
   useEffect(() => {
     if (selected) {
       const id = requestAnimationFrame(() => setMounted(true))
@@ -54,16 +57,15 @@ export function FocusOverlay({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            // No backdrop click to close; use X button or Escape key
           />
 
-          <FocusVizCentered 
-            selected={selected} 
+          <FocusVizCentered
+            selected={selected}
             highlightedArc={highlightedArc}
             onArcHover={setHighlightedArc}
           />
-          
-          {/* Close button - now bigger and top right */}
+
+          {/* Close button */}
           <div className="absolute top-6 right-12 z-[120]">
             <Button
               variant="ghost"
@@ -76,8 +78,8 @@ export function FocusOverlay({
             </Button>
           </div>
 
-          {/* Left panel - Inner Arc */}
-          <motion.div 
+          {/* Left panel - Angular Distance */}
+          <motion.div
             className="absolute left-[15%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -88,71 +90,77 @@ export function FocusOverlay({
               <div className="flex items-start gap-3 rounded-lg bg-amber-500/10 border border-amber-500/20 p-4 relative">
                 <div className="w-3 h-3 rounded-full bg-amber-300 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold text-amber-300 text-lg">Inner Arc - Angular Distance</h4>
+                  <h4 className="font-semibold text-amber-300 text-lg">
+                    Inner Arc - Angular Distance
+                  </h4>
                   <p className="text-base text-white/90 mt-2">
-                    How large the event appears in our sky: <strong>{Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : 'N/A'}°</strong>
+                    How large the event appears in our sky:{" "}
+                    <strong>
+                      {Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : "N/A"}°
+                    </strong>
                   </p>
                   <p className="text-sm text-amber-300/90 mt-2">
-                    {Number.isFinite(angularDeg) ? getAngularAnalogy(angularDeg) : 'Angular size not available'}
+                    {Number.isFinite(angularDeg)
+                      ? getAngularAnalogy(angularDeg)
+                      : "Angular size not available"}
                   </p>
                 </div>
               </div>
             </div>
-
           </motion.div>
 
-          {/* Right panel - Outer Arc */}
-          <motion.div 
+          {/* Right panel - Time Difference */}
+          <motion.div
             className="absolute right-[15%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
           >
-              <div className="relative rounded-lg">
-                {/* Black background layer */}
-                <div className="absolute inset-0 rounded-lg bg-black/70 backdrop-blur border border-white/10" />
-
-                {/* Cyan card layer */}
-                <div className="flex items-start gap-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20 p-4 relative">
-                  <div className="w-3 h-3 rounded-full bg-cyan-300 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-cyan-300 text-lg">Outer Arc - Spatial Distance</h4>
-                    <p className="text-base text-white/90 mt-2">
-                      How far away the event actually is: <strong>
-                        {spatialMly !== null
-                          ? `${spatialMly.toLocaleString()} million light-years`
-                          : 'N/A million light-years'}
-                      </strong>
-                    </p>
-                    <p className="text-sm text-cyan-300/90 mt-2">
-                      {spatialMly !== null
-                        ? getDistanceAnalogy(spatialMly)
-                        : 'In the distant universe'}
-                    </p>
-                  </div>
+            <div className="relative rounded-lg">
+              <div className="absolute inset-0 rounded-lg bg-black/70 backdrop-blur border border-white/10" />
+              <div className="flex items-start gap-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20 p-4 relative">
+                <div className="w-3 h-3 rounded-full bg-cyan-300 mt-1 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-cyan-300 text-lg">
+                    Outer Arc - Time Difference
+                  </h4>
+                  <p className="text-base text-white/90 mt-2">
+                    Time gap between the two events:{" "}
+                    <strong>
+                      {timeDiffHours !== null
+                        ? `${timeDiffHours.toFixed(2)} hours`
+                        : "N/A"}
+                    </strong>
+                  </p>
+                  <p className="text-sm text-cyan-300/90 mt-2">
+                    {timeDiffHours !== null
+                      ? `That’s about ${(timeDiffHours / 24).toFixed(
+                          2
+                        )} days apart.`
+                      : "Time gap not available"}
+                  </p>
                 </div>
               </div>
-
+            </div>
           </motion.div>
 
-          {/* Lighthouse analogy at bottom */}
-          <motion.div 
+          {/* Bottom analogy */}
+          <motion.div
             className="absolute bottom-12 left-1/2 -translate-x-1/2 z-[110] max-w-[600px] w-full px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
           >
-            
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3 rounded-3xl bg-black/40 border border-white/10 p-6">
-                  <p className="text-base text-white/90">
-                    <strong>💡 Think of it like a lighthouse:</strong> The inner arc shows how bright it appears to you, 
-                    while the outer arc shows how far away it actually is. A nearby dim lighthouse might appear 
-                    as bright as a distant powerful one!
-                  </p>
-                </div>
-              </CardContent>
-
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3 rounded-3xl bg-black/40 border border-white/10 p-6">
+                <p className="text-base text-white/90">
+                  <strong>💡 Think of it like a race:</strong> The inner arc shows
+                  how big the event looks in the sky, while the outer arc shows how
+                  far apart in time the signals arrived. Even if two cosmic messengers
+                  look linked, a big time gap may mean they aren’t connected.
+                </p>
+              </div>
+            </CardContent>
           </motion.div>
         </div>
       )}
@@ -160,37 +168,37 @@ export function FocusOverlay({
   )
 }
 
-// New centered renderer: arcs always drawn in the middle of the screen
-function FocusVizCentered({ 
-  selected, 
-  highlightedArc, 
-  onArcHover 
-}: { 
+// Visualization in the center
+function FocusVizCentered({
+  selected,
+  highlightedArc,
+  onArcHover,
+}: {
   selected: EventItem
-  highlightedArc: 'angular' | 'spatial' | null
-  onArcHover: (arc: 'angular' | 'spatial' | null) => void
+  highlightedArc: "angular" | "time" | null
+  onArcHover: (arc: "angular" | "time" | null) => void
 }) {
-  // viewBox 0..1000, place center at 500,500
   const cx = 500
   const cy = 500
+  const safeNum = (v: unknown, fallback = 0) =>
+    typeof v === "number" && Number.isFinite(v) ? v : fallback
 
-  // Adjust the visualization to be slightly more compact to prevent overlap
-  // Scale factor based on confidence - more confident events get larger visualizations
-  const safeNum = (v: unknown, fallback = 0) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback)
   const confidence = safeNum(selected.confidence, 0.5)
   const angularDeg = safeNum((selected as any).angular_distance_deg, 0)
-  const spatialMlyRaw = (selected as any).spatial_distance_mly
-  const spatialMly = typeof spatialMlyRaw === 'number' && Number.isFinite(spatialMlyRaw) ? spatialMlyRaw : null
+  const timeDiffHoursRaw = (selected as any).time_diff_hours
+  const timeDiffHours =
+    typeof timeDiffHoursRaw === "number" && Number.isFinite(timeDiffHoursRaw)
+      ? timeDiffHoursRaw
+      : null
 
-  const scaleFactor = 0.9 - (confidence * 0.15)
-  
-  // Clamp radii to prevent them from becoming too large and going off-screen
-  // Reduced maximum values to prevent overlaps
+  const scaleFactor = 0.9 - confidence * 0.15
+
   const rAngularBase = 80 + angularDeg * 8
   const rAngular = Math.min(180, Math.max(40, rAngularBase * scaleFactor))
-  const rSpatial = spatialMly !== null
-    ? Math.min(380, Math.max(120, (rAngular + 60 + spatialMly * 0.4) * scaleFactor))
-    : Math.min(380, Math.max(120, (rAngular + 60) * scaleFactor))
+  const rTime =
+    timeDiffHours !== null
+      ? Math.min(380, Math.max(120, (rAngular + 60 + timeDiffHours * 0.4) * scaleFactor))
+      : Math.min(380, Math.max(120, (rAngular + 60) * scaleFactor))
 
   const arc = (r: number) => {
     const sweep = 300
@@ -221,159 +229,95 @@ function FocusVizCentered({
           <stop offset="0%" stopColor="#22d3ee" />
           <stop offset="100%" stopColor="#facc15" />
         </linearGradient>
-        {/* Add IDs to the arc paths so text can reference them */}
         <path id="angularPath" d={arc(rAngular)} fill="none" />
-        <path id="spatialPath" d={arc(rSpatial)} fill="none" />
-        <path id="coordPath" d={`M ${cx-150} ${cy+80} L ${cx+150} ${cy+80}`} fill="none" />
+        <path id="timePath" d={arc(rTime)} fill="none" />
       </defs>
 
-      {/* Render visible arcs with interactive hover */}
+      {/* Angular arc */}
       <motion.path
         d={arc(rAngular)}
-        stroke={highlightedArc === 'angular' ? "#facc15" : "url(#holo)"}
-        strokeWidth={highlightedArc === 'angular' ? 4 : 2}
-        strokeLinecap="round"
+        stroke={highlightedArc === "angular" ? "#facc15" : "url(#holo)"}
+        strokeWidth={highlightedArc === "angular" ? 4 : 2}
         fill="none"
-        filter={highlightedArc === 'angular' ? "url(#glow-strong)" : "url(#glow-strong)"}
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.0, ease: "easeInOut" }}
-        onMouseEnter={() => onArcHover('angular')}
+        filter="url(#glow-strong)"
+        onMouseEnter={() => onArcHover("angular")}
         onMouseLeave={() => onArcHover(null)}
-        style={{ cursor: 'pointer' }}
-      />
-      <motion.path
-        d={arc(rSpatial)}
-        stroke={highlightedArc === 'spatial' ? "#22d3ee" : "url(#holo)"}
-        strokeWidth={highlightedArc === 'spatial' ? 4 : 2}
-        strokeLinecap="round"
-        fill="none"
-        filter={highlightedArc === 'spatial' ? "url(#glow-strong)" : "url(#glow-strong)"}
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ delay: 0.1, duration: 1.0, ease: "easeInOut" }}
-        onMouseEnter={() => onArcHover('spatial')}
-        onMouseLeave={() => onArcHover(null)}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: "pointer" }}
       />
 
-      {/* Labels attached directly to arc paths */}
-      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-        {/* Angular Label */}
-        <text 
-          dy={-8} 
-          fill={highlightedArc === 'angular' ? "#facc15" : "#e5e7eb"} 
-          fontSize="12" 
-          className="uppercase tracking-wider font-semibold"
-        >
+      {/* Time arc */}
+      <motion.path
+        d={arc(rTime)}
+        stroke={highlightedArc === "time" ? "#22d3ee" : "url(#holo)"}
+        strokeWidth={highlightedArc === "time" ? 4 : 2}
+        fill="none"
+        filter="url(#glow-strong)"
+        onMouseEnter={() => onArcHover("time")}
+        onMouseLeave={() => onArcHover(null)}
+        style={{ cursor: "pointer" }}
+      />
+
+      {/* Labels */}
+      <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        {/* Angular label */}
+        <text dy={-8} fill="#facc15" fontSize="12" className="uppercase tracking-wider font-semibold">
           <textPath href="#angularPath" startOffset="50%" textAnchor="middle">
             Angular Size
           </textPath>
         </text>
-        <motion.text 
-          dy={16} 
-          fill={highlightedArc === 'angular' ? "#facc15" : "#e5e7eb"} 
-          fontSize="20" 
-          filter="url(#glow-strong)"
-          animate={{ 
-            scale: highlightedArc === 'angular' ? 1.1 : 1,
-            opacity: highlightedArc === 'angular' ? 1 : 0.8
-          }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.text dy={16} fill="#facc15" fontSize="20" filter="url(#glow-strong)">
           <textPath href="#angularPath" startOffset="50%" textAnchor="middle">
-            {Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : 'N/A'}°
+            {Number.isFinite(angularDeg) ? angularDeg.toFixed(2) : "N/A"}°
           </textPath>
         </motion.text>
 
-        {/* Spatial Label */}
-        <text 
-          dy={-8} 
-          fill={highlightedArc === 'spatial' ? "#22d3ee" : "#facc15"} 
-          fontSize="12" 
-          className="uppercase tracking-wider font-semibold"
-        >
-          <textPath href="#spatialPath" startOffset="50%" textAnchor="middle">
-            Spatial Distance
+        {/* Time difference label */}
+        <text dy={-8} fill="#22d3ee" fontSize="12" className="uppercase tracking-wider font-semibold">
+          <textPath href="#timePath" startOffset="50%" textAnchor="middle">
+            Time Difference
           </textPath>
         </text>
-        <motion.text 
-          dy={16} 
-          fill={highlightedArc === 'spatial' ? "#22d3ee" : "#facc15"} 
-          fontSize="20" 
-          filter="url(#glow-strong)"
-          animate={{ 
-            scale: highlightedArc === 'spatial' ? 1.1 : 1,
-            opacity: highlightedArc === 'spatial' ? 1 : 0.8
-          }}
-          transition={{ duration: 0.2 }}
-        >
-          <textPath href="#spatialPath" startOffset="50%" textAnchor="middle">
-            {spatialMly !== null ? `${spatialMly} Mly` : 'N/A Mly'}
+        <motion.text dy={16} fill="#22d3ee" fontSize="20" filter="url(#glow-strong)">
+          <textPath href="#timePath" startOffset="50%" textAnchor="middle">
+            {timeDiffHours !== null ? `${timeDiffHours.toFixed(1)}h` : "N/A"}
           </textPath>
         </motion.text>
-        
-        {/* Center point with pulsing animation */}
-        <motion.circle
-          cx={cx}
-          cy={cy}
-          r="8"
-          fill="url(#holo)"
-          filter="url(#glow-strong)"
-          animate={{ 
-            r: [8, 12, 8],
-            opacity: [0.8, 1, 0.8]
-          }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        
-        {/* Event title and coordinates in one group near top */}
-        <filter id="title-bg">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
-          <feColorMatrix type="matrix" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.8 0"/>
-        </filter>
-        
-        {/* Background for both title and coordinates */}
-        <rect
-          x={cx - 250}
-          y="120"
-          width="500"
-          height="100"
-          fill="black"
-          filter="url(#title-bg)"
-          opacity="0.8"
-        />
-        
-        {/* Event title */}
-        <text 
-          x={cx} 
-          y="160" 
-          fill="#ffffff" 
-          fontSize="32" 
-          textAnchor="middle" 
-          className="font-semibold" 
-          filter="url(#glow-strong)"
-        >
-          {String((selected as any).event || 'Unknown Event')}
-        </text>
-        
-        {/* Coordinates right below title */}
-        <text 
-          x={cx} 
-          y="195" 
-          fill="#cfcfee" 
-          fontSize="16" 
-          textAnchor="middle" 
-          className="uppercase tracking-wider opacity-70" 
-        >
-          RA {safeNum((selected as any).lng, 0).toFixed(2)}° / DEC {safeNum((selected as any).lat, 0).toFixed(2)}°
-        </text>
       </motion.g>
 
+      {/* Center pulsing point */}
+      <motion.circle
+        cx={cx}
+        cy={cy}
+        r="8"
+        fill="url(#holo)"
+        filter="url(#glow-strong)"
+        animate={{ r: [8, 12, 8], opacity: [0.8, 1, 0.8] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Event title */}
+      <text
+        x={cx}
+        y="160"
+        fill="#ffffff"
+        fontSize="32"
+        textAnchor="middle"
+        className="font-semibold"
+        filter="url(#glow-strong)"
+      >
+        {String((selected as any).event || "Unknown Event")}
+      </text>
+      <text
+        x={cx}
+        y="195"
+        fill="#cfcfee"
+        fontSize="16"
+        textAnchor="middle"
+        className="uppercase tracking-wider opacity-70"
+      >
+        RA {safeNum((selected as any).lng, 0).toFixed(2)}° / DEC{" "}
+        {safeNum((selected as any).lat, 0).toFixed(2)}°
+      </text>
     </motion.svg>
   )
 }
