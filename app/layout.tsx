@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   title: 'Team BlueBerry',
   description: 'Created by Team BlueBerry',
   generator: 'Team BlueBerry',
+  icons: {
+    icon: '/blueberry.png',
+    apple: '/blueberry.png'
+  }
 }
 
 export default function RootLayout({

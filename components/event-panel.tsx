@@ -65,33 +65,33 @@ export function EventPanel({
     <div className="space-y-3 pb-2">
       {/* Header Card */}
       <Card
-        className={`relative overflow-hidden border border-white/10 ${cardRadius} shadow-lg
-                    bg-transparent backdrop-blur-sm max-w-md mx-auto`}
+        className={`relative overflow-hidden border border-white/20 ${cardRadius} shadow-lg
+                    bg-black/80 backdrop-blur-sm max-w-md mx-auto`}
       >
-        <CardHeader className={`${cardTitleBg} py-4`}>
+        <CardHeader className={`${cardTitleBg} py-4 border-b border-white/20`}>
           <CardTitle className={`${cardTitleText} text-center`}>
             Year {year} Detections
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-white/70">
+        <CardContent className="text-sm text-cyan-100">
           <div className="flex items-center justify-between gap-4">
             <div>
-              Showing {visible.length} of {events.length} events. Click a card to focus.
+              Showing <span className="text-amber-300 font-semibold">{visible.length}</span> of <span className="text-green-300 font-semibold">{events.length}</span> events. Click a card to focus.
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setShowAll((s) => !s)}
-                className="text-xs text-cyan-300 hover:underline focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-black rounded px-2 py-1"
+                className="text-xs text-cyan-300 hover:text-cyan-200 hover:bg-cyan-900/30 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-black rounded px-3 py-1 border border-cyan-500/30 transition-all duration-200"
               >
                 {showAll ? "Show less" : "View all"}
               </button>
             </div>
           </div>
-          <div className="mt-2 text-xs text-white/60">
+          <div className="mt-2 text-xs text-purple-200">
             💡{" "}
             <AccessibleTooltip term="Detection Confidence" showIcon={false}>
-              <span className="underline decoration-dotted decoration-cyan-300/50 underline-offset-2">
+              <span className="underline decoration-dotted decoration-cyan-300/50 underline-offset-2 text-cyan-200">
                 Hover over underlined terms
               </span>
             </AccessibleTooltip>{" "}
@@ -133,31 +133,31 @@ export function EventPanel({
                   onKeyDown={(e) =>
                     (e.key === "Enter" || e.key === " ") && onSelect?.(ev)
                   }
-                  className={`relative border border-white/10 bg-white/5 backdrop-blur-sm
+                  className={`relative border border-white/20 bg-black/60 backdrop-blur-sm
                               transition-all duration-300 cursor-pointer
-                              hover:bg-white/10 hover:shadow-lg
-                              ${isSelected ? "ring-2 ring-amber-300/50" : ""}
+                              hover:bg-black/70 hover:shadow-lg
+                              ${isSelected ? "bg-black/80" : ""}
                               ${cardRadius}`}
                 >
                   <CardContent className={`${cardPadding}`}>
                     <div className={`flex items-start ${cardGap}`}>
                       {/* Type dot */}
                       <span
-                        className="mt-1 inline-block h-2 w-2 flex-shrink-0 rounded-full"
+                        className="mt-1 inline-block h-3 w-3 flex-shrink-0 rounded-full border-2 border-white/20"
                         style={{
                           backgroundColor: c,
-                          boxShadow: `0 0 8px ${c}`
+                          boxShadow: `0 0 12px ${c}, inset 0 1px 2px rgba(255,255,255,0.2)`
                         }}
                         aria-hidden="true"
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between">
-                          <div className={`font-medium text-white ${cardText}`}>
+                          <div className={`font-semibold text-cyan-100 ${cardText}`}>
                             {ev.event}
                           </div>
                           <AccessibleTooltip term="Detection Confidence">
                             <div
-                              className={`text-xs md:text-sm text-white/70 cursor-help font-medium`}
+                              className={`text-xs md:text-sm text-green-300 cursor-help font-bold bg-green-900/30 px-2 py-1 rounded`}
                             >
                               {pct}%
                             </div>
@@ -165,7 +165,7 @@ export function EventPanel({
                         </div>
 
                         <p
-                          className={`mt-1.5 ${cardText} leading-relaxed text-white/80`}
+                          className={`mt-1.5 ${cardText} leading-relaxed text-gray-200`}
                         >
                           {ev.description}
                         </p>
@@ -173,23 +173,30 @@ export function EventPanel({
                         {/* Key Info */}
                         <div className="mt-3 flex items-center justify-between">
                           <AccessibleTooltip term={ev.type}>
-                            <span className="cursor-help text-white/80 text-xs md:text-sm font-medium">
+                            <span className={`cursor-help font-semibold ${cardText === 'text-xs md:text-sm' ? 'text-xs md:text-sm' : 'text-sm md:text-base'} ${ev.type === 'Gravitational Wave' ? '' : 'px-2 py-1 rounded'}`} 
+                                  style={{ 
+                                    color: typeColor(ev.type, colors),
+                                    ...(ev.type !== 'Gravitational Wave' && {
+                                      backgroundColor: `${typeColor(ev.type, colors)}20`,
+                                      border: `1px solid ${typeColor(ev.type, colors)}40`
+                                    })
+                                  }}>
                               {ev.type}
                             </span>
                           </AccessibleTooltip>
-                          <span className="text-white/60 text-xs md:text-sm font-mono tracking-tight">
+                          <span className="text-purple-200 text-xs md:text-sm font-mono tracking-tight bg-purple-900/20 px-2 py-1 rounded">
                             {ev.lat != null ? ev.lat.toFixed(1) : "-"}°, {ev.lng != null ? ev.lng.toFixed(1) : "-"}°
                           </span>
                         </div>
 
                         {/* Confidence bar */}
                         <div className="mt-4">
-                          <div className="h-1 overflow-hidden rounded-full bg-white/10">
+                          <div className="h-2 overflow-hidden rounded-full bg-black/60 border border-white/10">
                             <motion.div
                               className="h-full rounded-full"
                               style={{
-                                backgroundColor: c,
-                                boxShadow: `0 0 8px ${c}`
+                                background: `linear-gradient(90deg, ${c}aa, ${c})`,
+                                boxShadow: `0 0 8px ${c}, inset 0 1px 1px rgba(255,255,255,0.2)`
                               }}
                               initial={{ width: 0 }}
                               animate={{ width: `${pct}%` }}
