@@ -160,19 +160,19 @@ export default function DashboardPage() {
           ) : (
             <DataTable data={data} />
           )}
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <button
               className="rounded-lg bg-cyan-500 hover:bg-cyan-400 px-6 py-2 text-white font-semibold"
               onClick={() => setShowModal(true)}
             >
               Submit Data
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Upload Modal */}
-      {showModal && (
+      {/* {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
           <div className="bg-black p-6 rounded-lg w-[400px] max-w-full">
             <h3 className="text-xl font-bold text-white mb-4">Upload CSV</h3>
@@ -210,7 +210,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </main>
   )
 }
