@@ -101,14 +101,6 @@ export default function DashboardPage() {
           ) : (
             <DataTable data={data} />
           )}
-          {/* <div className="mt-6">
-            <button
-              className="rounded-lg bg-cyan-500 hover:bg-cyan-400 px-6 py-2 text-white font-semibold"
-              onClick={() => setShowModal(true)}
-            >
-              Submit Data
-            </button>
-          </div> */}
         </div>
       </div>
 

@@ -105,7 +105,7 @@ export default function SubmitPage() {
         <div className="space-y-2 text-white/80">
           <p>• <strong>Minimum Requirement:</strong> Upload at least <span className="text-cyan-400 font-bold">2 CSV files</span></p>
           <p>• <strong>File Format:</strong> Only CSV files are accepted</p>
-          <p>• <strong>Purpose:</strong> Our ML model requires multiple datasets to find correlations between gravitational wave and gamma-ray burst events</p>
+          <p>• <strong>Purpose:</strong> Our algorithm requires multiple datasets to find correlations between events</p>
           <p>• <strong>Processing:</strong> Files will be analyzed to identify potential correlations based on temporal and spatial proximity</p>
         </div>
       </div>
