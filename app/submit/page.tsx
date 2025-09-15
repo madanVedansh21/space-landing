@@ -9,6 +9,8 @@ export default function SubmitPage() {
   const [files, setFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [csvUrl, setCsvUrl] = useState<string | null>(null)
+  const [jsonResult, setJsonResult] = useState<any>(null)
 
   // Check if user is authenticated
   useEffect(() => {
@@ -36,7 +38,8 @@ export default function SubmitPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+    setCsvUrl(null)
+    setJsonResult(null)
     if (files.length < 2) {
       alert('Please select at least 2 CSV files')
       return
@@ -51,38 +54,69 @@ export default function SubmitPage() {
         formData.append('files', file)
       })
 
-      // Use XMLHttpRequest for progress tracking
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        xhr.open("POST", "/api/submit", true)
+      // Use fetch for easier response handling
+      const xhr = new XMLHttpRequest()
+      xhr.open("POST", "/api/submit", true)
 
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const percentComplete = Math.round((event.loaded / event.total) * 100)
-            setUploadProgress(percentComplete)
-          }
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = Math.round((event.loaded / event.total) * 100)
+          setUploadProgress(percentComplete)
         }
+      }
 
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve()
+      xhr.responseType = 'blob'
+
+      xhr.onload = () => {
+        setUploading(false)
+        setUploadProgress(0)
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const contentType = xhr.getResponseHeader('content-type') || ''
+          if (contentType.includes('text/csv')) {
+            // CSV file returned
+            const blob = xhr.response
+            const url = URL.createObjectURL(blob)
+            setCsvUrl(url)
+            setJsonResult(null)
+          } else if (contentType.includes('application/json')) {
+            // JSON returned
+            const reader = new FileReader()
+            reader.onload = () => {
+              try {
+                setJsonResult(JSON.parse(reader.result as string))
+                setCsvUrl(null)
+              } catch (e) {
+                setJsonResult({ error: 'Failed to parse JSON' })
+                setCsvUrl(null)
+              }
+            }
+            reader.readAsText(xhr.response)
           } else {
-            reject(new Error(`Upload failed with status ${xhr.status}`))
+            // Unknown type, just offer download
+            const blob = xhr.response
+            const url = URL.createObjectURL(blob)
+            setCsvUrl(url)
+            setJsonResult(null)
           }
+        } else {
+          setCsvUrl(null)
+          setJsonResult({ error: `Upload failed with status ${xhr.status}` })
         }
+      }
 
-        xhr.onerror = () => reject(new Error("Upload failed"))
-        xhr.send(formData)
-      })
+      xhr.onerror = () => {
+        setUploading(false)
+        setUploadProgress(0)
+        setCsvUrl(null)
+        setJsonResult({ error: 'Upload failed' })
+      }
 
-      alert("CSV files uploaded successfully!")
-      router.push('/dashboard')
+      xhr.send(formData)
     } catch (err) {
-      console.error(err)
-      alert("Upload failed")
-    } finally {
       setUploading(false)
       setUploadProgress(0)
+      setCsvUrl(null)
+      setJsonResult({ error: 'Upload failed' })
     }
   }
 
@@ -164,6 +198,25 @@ export default function SubmitPage() {
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
+            </div>
+          )}
+
+          {/* CSV Download Link or JSON Result */}
+          {csvUrl && (
+            <div className="mt-6">
+              <a
+                href={csvUrl}
+                download="correlated_results.csv"
+                className="inline-block bg-cyan-600 hover:bg-cyan-400 text-white font-semibold px-6 py-3 rounded-lg"
+              >
+                Download Correlated Results CSV
+              </a>
+            </div>
+          )}
+          {jsonResult && (
+            <div className="mt-6 bg-white/10 rounded-lg p-4">
+              <h3 className="font-semibold mb-2 text-cyan-400">JSON Result</h3>
+              <pre className="text-white/80 text-sm whitespace-pre-wrap break-all">{JSON.stringify(jsonResult, null, 2)}</pre>
             </div>
           )}
 
