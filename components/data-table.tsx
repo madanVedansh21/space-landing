@@ -55,11 +55,13 @@ export default function DataTable({ data, type }: DataTableProps) {
               ) : type === 'grb' ? (
                 <>
                   <TableHead className="text-white">Event ID</TableHead>
-                  <TableHead className="text-white">Time</TableHead>
-                  <TableHead className="text-white">RA</TableHead>
-                  <TableHead className="text-white">Dec</TableHead>
-                  <TableHead className="text-white">Flux</TableHead>
-                  <TableHead className="text-white">Pos Error</TableHead>
+                  <TableHead className="text-white">Source</TableHead>
+                  <TableHead className="text-white">Event Type</TableHead>
+                  <TableHead className="text-white">UTC Time</TableHead>
+                  <TableHead className="text-white">RA (deg)</TableHead>
+                  <TableHead className="text-white">Dec (deg)</TableHead>
+                  <TableHead className="text-white">Pos Error (deg)</TableHead>
+                  <TableHead className="text-white">Signal Strength</TableHead>
                 </>
               ) : (
                 <>
@@ -82,16 +84,16 @@ export default function DataTable({ data, type }: DataTableProps) {
                   </TableRow>
                 ))
               : type === 'grb' && Array.isArray(data)
-              ? (data as GRBEvent[]).map((event) => (
-                  <TableRow key={event._id} className="hover:bg-white/5">
+              ? (data as any[]).map((event) => (
+                  <TableRow key={event._id || event.event_id} className="hover:bg-white/5">
                     <TableCell className="text-white">{event.event_id}</TableCell>
-                    <TableCell className="text-white text-muted-foreground">
-                      {event.time ? formatDistanceToNow(new Date(event.time)) : "-"}
-                    </TableCell>
-                    <TableCell className="text-white">{event.ra}</TableCell>
-                    <TableCell className="text-white">{event.dec}</TableCell>
-                    <TableCell className="text-white">{event.flux}</TableCell>
-                    <TableCell className="text-white">{event.pos_error}</TableCell>
+                    <TableCell className="text-white">{event.source}</TableCell>
+                    <TableCell className="text-white">{event.event_type}</TableCell>
+                    <TableCell className="text-white text-muted-foreground">{event.utc_time ?? '-'}</TableCell>
+                    <TableCell className="text-white">{typeof event.ra_deg === 'number' ? event.ra_deg.toFixed(6) : (event.ra ?? '-')}</TableCell>
+                    <TableCell className="text-white">{typeof event.dec_deg === 'number' ? event.dec_deg.toFixed(6) : (event.dec ?? '-')}</TableCell>
+                    <TableCell className="text-white">{typeof event.pos_error_deg === 'number' ? event.pos_error_deg.toExponential(2) : (event.pos_error ?? '-')}</TableCell>
+                    <TableCell className="text-white">{event.signal_strength ?? '-'}</TableCell>
                   </TableRow>
                 ))
               : Array.isArray(data)
