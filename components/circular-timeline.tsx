@@ -176,7 +176,8 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
           boxShadow: `
             0 0 30px rgba(59, 130, 246, 0.1),
             inset 0 0 50px rgba(255, 255, 255, 0.03)
-          `
+          `,
+          opacity: 0.7
         }}
         whileHover={{ scale: 1.0 }}
         whileTap={{ scale: 1.00 }}
@@ -337,7 +338,7 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
 
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
           {/* Static label */}
-          <div className="text-xs uppercase tracking-widest text-white/90 mb-1">
+          <div className="text-xs uppercase tracking-widest text-white/100 mb-1">
             Year
           </div>
 

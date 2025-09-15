@@ -47,10 +47,11 @@ export default function LandingOverlay() {
         {/* Left side - Title, summary, and timeline */}
         <section className="flex flex-col justify-center px-4 pt-16 pb-8 lg:px-8">
           <div className="mx-auto max-w-lg text-center lg:text-left">
-            <h1 className="text-pretty text-3xl font-semibold tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
-              Space Event Timeline
+            <h1 className="text-pretty text-3xl font-extrabold tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
+              <span className="block bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 to-amber-300">Sambandha</span>
+              <span className="block mt-1 text-base font-medium text-white/75 md:text-lg lg:text-base">A multi-messenger event correlator</span>
             </h1>
-            <p className="mt-3 text-balance text-lg text-white/85 lg:text-xl">
+            <p className="mt-3 text-balance text-lg text-white/70 lg:text-xl">
               Drag or scroll the dial to explore yearly detections.
             </p>
 
