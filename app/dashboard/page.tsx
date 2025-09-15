@@ -52,27 +52,23 @@ export default function DashboardPage() {
     }
   }, [router])
 
-  // Fetch data function
-  const fetchData = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch('/api/correlated')
-      const result = await response.json()
-      if (result.success) {
-        setData(result.data)
-      }
-    } catch (error) {
-      console.error('Failed to fetch data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // Fetch data only after auth is confirmed
   useEffect(() => {
-    if (authChecked) {
-      fetchData()
+    if (!authChecked) return;
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/getalldatagrb')
+        const result = await response.json()
+        if (result.success) {
+          setData(result.data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      } finally {
+        setLoading(false)
+      }
     }
+    fetchData()
   }, [authChecked])
 
   if (!authChecked) {
@@ -124,7 +120,7 @@ export default function DashboardPage() {
       setUploadProgress(0)
 
       // Refresh data table automatically
-      fetchData()
+      // fetchData()
     } catch (err) {
       console.error(err)
       alert("Upload failed")

@@ -1,6 +1,6 @@
 import {Schema,model,models } from "mongoose";
 
-const AllRawDataGrb = new Schema({
+const AllRawDataGw = new Schema({
     event_id: { type: String, required: true },
     source: { type: String, required: true },
     event_type: { type: String, required: true },
@@ -11,6 +11,6 @@ const AllRawDataGrb = new Schema({
     strength_signal: { type: Number, required: false }
 });
 
-const AllRawDataModelGrb = models.AllRawData || model("AllRawData", AllRawDataGrb);
+const AllRawDataModelGw = models.AllRawDataGw || model("AllRawDataGw", AllRawDataGw);
 
-export default AllRawDataModelGrb;
+export default AllRawDataModelGw;
