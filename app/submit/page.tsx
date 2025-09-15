@@ -47,8 +47,8 @@ export default function SubmitPage() {
 
     try {
       const formData = new FormData()
-      files.forEach((file, index) => {
-        formData.append(`csv_${index}`, file)
+      files.forEach(file => {
+        formData.append('files', file)
       })
 
       // Use XMLHttpRequest for progress tracking

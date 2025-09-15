@@ -1,30 +1,28 @@
-
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    // Accept at least two CSV files
-    const file1 = formData.get("file1") as File;
-    const file2 = formData.get("file2") as File;
-    if (!file1 || !file2) {
-      return NextResponse.json({ error: "At least two CSV files are required (file1, file2)" }, { status: 400 });
-    }
 
-    // Prepare FormData to send to external Python server
-    const outForm = new FormData();
-    outForm.append("file1", file1, file1.name);
-    outForm.append("file2", file2, file2.name);
-
-    // Add any additional files if present
-    for (const [key, value] of formData.entries()) {
-      if ((key !== "file1" && key !== "file2") && value instanceof File) {
-        outForm.append(key, value, value.name);
+    // Accept at least two CSV files (count all File entries)
+    const filesToSend: File[] = [];
+    for (const [, value] of formData.entries()) {
+      if (value instanceof File) {
+        filesToSend.push(value);
       }
     }
+    if (filesToSend.length < 2) {
+      return NextResponse.json({ error: "At least two CSV files are required" }, { status: 400 });
+    }
 
-    // Send to external Python server (URL to be updated)
-    const pythonRes = await fetch("", {
+    // Prepare FormData to send to external Python server as a list under 'files'
+    const outForm = new FormData();
+    filesToSend.forEach(file => {
+      outForm.append('files', file, file.name);
+    });
+
+  // Send to external Python server (updated URL)
+  const pythonRes = await fetch("https://kd-tree-ctrl-hack-production.up.railway.app/correlate", {
       method: "POST",
       body: outForm,
     });
