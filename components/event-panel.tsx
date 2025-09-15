@@ -62,14 +62,14 @@ export function EventPanel({
   const cardTitleBg = emphasizeTitle
 
   return (
-    <div className="space-y-3 pb-24">
+    <div className="space-y-3 pb-4">
       {/* Header Card */}
       <Card
         className={`relative overflow-hidden border border-white/10 ${cardRadius} shadow-lg
-                    bg-transparent backdrop-blur-sm`}
+                    bg-transparent backdrop-blur-sm max-w-md mx-auto`}
       >
         <CardHeader className={`${cardTitleBg} py-4`}>
-          <CardTitle className={cardTitleText}>
+          <CardTitle className={`${cardTitleText} text-center`}>
             Year {year} Detections
           </CardTitle>
         </CardHeader>
@@ -102,7 +102,7 @@ export function EventPanel({
 
       {/* Events List */}
       <div
-        className="space-y-2 max-h-[55vh] lg:max-h-[600px] overflow-y-auto pr-2
+        className="space-y-2 max-h-[calc(100vh-350px)] overflow-y-auto pr-2
                    scrollbar-thin scrollbar-thumb-cyan-300/30 scrollbar-track-transparent
                    hover:scrollbar-thumb-cyan-300/50 transition-all duration-300"
       >

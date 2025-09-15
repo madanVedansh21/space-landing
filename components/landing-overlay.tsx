@@ -56,12 +56,26 @@ export default function LandingOverlay() {
 
             {/* Event summary */}
             <div className="mt-6 grid grid-cols-2 gap-3 rounded-xl border border-white/10 bg-black/35 px-4 py-3 text-sm text-white/85 backdrop-blur">
-              {Object.entries(counts).map(([k, v]) => (
-                <div key={k} className="flex items-center justify-between">
-                  <span className="text-white/70">{k}</span>
-                  <span className="font-semibold text-amber-300">{v}</span>
-                </div>
-              ))}
+              {Object.keys(counts).length > 0 ? (
+                Object.entries(counts).map(([k, v]) => (
+                  <div key={k} className="flex items-center justify-between">
+                    <span className="text-white/70">{k}</span>
+                    <span className="font-semibold text-amber-300">{v}</span>
+                  </div>
+                ))
+              ) : (
+                // Placeholder items to maintain consistent size while loading
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Loading...</span>
+                    <span className="font-semibold text-amber-300">-</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Please wait</span>
+                    <span className="font-semibold text-amber-300">-</span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Circular timeline moved here, slightly smaller */}
@@ -81,7 +95,7 @@ export default function LandingOverlay() {
         </section>
 
         {/* Right side - Event details, shifted down */}
-        <section className="flex flex-col px-4 pt-28 pb-8 lg:px-8">
+        <section className="flex flex-col px-4 pt-20 pb-8 lg:px-8">
           <div className="mx-auto w-full max-w-lg lg:h-full lg:overflow-y-auto lg:py-8">
             <EventPanel
               year={year}
