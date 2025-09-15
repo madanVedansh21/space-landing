@@ -4,35 +4,31 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import DataTable from '@/components/data-table'
 
-interface CorrelatedEvent {
+
+interface GWEvent {
   _id: string
-  rank: number
-  gw_event_id: string
-  grb_event_id: string
-  confidence_score: number
-  time_diff_sec: number
-  time_diff_hours: number
-  angular_sep_deg: number
-  within_error_circle: boolean
-  temporal_score: number
-  spatial_score: number
-  significance_score: number
-  gw_time: string
-  grb_time: string
-  gw_ra: number
-  gw_dec: number
-  grb_ra: number
-  grb_dec: number
-  gw_snr: number
-  grb_flux: number
-  gw_pos_error: number
-  grb_pos_error: number
-  combined_error_deg: number
+  event_id: string
+  time: string
+  ra: number
+  dec: number
+  snr: number
+  pos_error: number
+}
+
+interface GRBEvent {
+  _id: string
+  event_id: string
+  time: string
+  ra: number
+  dec: number
+  flux: number
+  pos_error: number
 }
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [data, setData] = useState<CorrelatedEvent[]>([])
+  const [gwData, setGwData] = useState<GWEvent[]>([])
+  const [grbData, setGrbData] = useState<GRBEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [authChecked, setAuthChecked] = useState(false)
 
@@ -46,17 +42,26 @@ export default function DashboardPage() {
     }
   }, [router])
 
-  // Fetch data function
+
+
+  // Fetch GW and GRB data
   const fetchData = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/correlated')
-      const result = await response.json()
-      if (result.success) {
-        setData(result.data)
+      const [gwRes, grbRes] = await Promise.all([
+        fetch('/api/getalldatagw'),
+        fetch('/api/getalldatagrb'),
+      ])
+      const gwJson = await gwRes.json()
+      const grbJson = await grbRes.json()
+      if (gwJson.success) {
+        setGwData(gwJson.data)
+      }
+      if (grbJson.success) {
+        setGrbData(grbJson.data)
       }
     } catch (error) {
-      console.error('Failed to fetch data:', error)
+      console.error('Failed to fetch GW/GRB data:', error)
     } finally {
       setLoading(false)
     }
@@ -92,14 +97,26 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Data Table Section */}
+      {/* GW Data Table Section */}
+      <div className="grid gap-6 mb-10">
+        <div>
+          <h2 className="text-2xl font-semibold mb-4">Raw GW Event Data</h2>
+          {loading ? (
+            <div className="text-white/60">Loading GW data...</div>
+          ) : (
+            <DataTable data={gwData} type="gw" />
+          )}
+        </div>
+      </div>
+
+      {/* GRB Data Table Section */}
       <div className="grid gap-6">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Raw Event Data</h2>
+          <h2 className="text-2xl font-semibold mb-4">Raw GRB Event Data</h2>
           {loading ? (
-            <div className="text-white/60">Loading data...</div>
+            <div className="text-white/60">Loading GRB data...</div>
           ) : (
-            <DataTable data={data} />
+            <DataTable data={grbData} type="grb" />
           )}
         </div>
       </div>
