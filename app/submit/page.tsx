@@ -78,6 +78,25 @@ export default function SubmitPage() {
             const url = URL.createObjectURL(blob)
             setCsvUrl(url)
             setJsonResult(null)
+                // Automatically upload CSV to /api/save-correlated
+                const uploadForm = new FormData();
+                uploadForm.append('file', blob, 'correlated.csv');
+                fetch('/api/save-correlated', {
+                  method: 'POST',
+                  body: uploadForm
+                })
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.success) {
+                      // Optionally show a message or update UI
+                      console.log('Correlated data saved to MongoDB:', data.count);
+                    } else {
+                      console.error('Failed to save correlated data:', data.error);
+                    }
+                  })
+                  .catch(err => {
+                    console.error('Error saving correlated data:', err);
+                  });
           } else if (contentType.includes('application/json')) {
             // JSON returned
             const reader = new FileReader()
