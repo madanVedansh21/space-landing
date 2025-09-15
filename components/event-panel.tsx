@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
 import type { EventItem } from "@/lib/events"
 import { AccessibleTooltip } from "@/components/ui/accessible-tooltip"
-import { getDistanceAnalogy, getAngularAnalogy, getConfidenceDescription } from "@/lib/accessibility-helpers"
 
 type Props = {
   year: number
@@ -39,7 +38,16 @@ function typeColor(type: EventItem["type"], colors: Props["colors"]) {
   }
 }
 
-export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisible = 3, cardSize = "md", emphasizeTitle = false }: Props) {
+export function EventPanel({
+  year,
+  events,
+  colors,
+  onSelect,
+  selectedId,
+  maxVisible = 3,
+  cardSize = "md",
+  emphasizeTitle = false
+}: Props) {
   const [showAll, setShowAll] = React.useState(false)
   const visible = showAll ? events : events.slice(0, maxVisible)
 
@@ -48,13 +56,19 @@ export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisi
   const cardText = cardSize === "sm" ? "text-xs md:text-sm" : "text-sm md:text-base"
   const cardGap = cardSize === "sm" ? "gap-2" : "gap-3"
   const cardRadius = cardSize === "sm" ? "rounded-lg" : "rounded-xl"
-  const cardTitleText = emphasizeTitle ? "text-xl md:text-2xl text-amber-300 font-extrabold tracking-tight drop-shadow-lg" : "text-lg text-pretty text-white font-semibold tracking-tight"
-  const cardTitleBg = emphasizeTitle 
+  const cardTitleText = emphasizeTitle
+    ? "text-xl md:text-2xl text-amber-300 font-extrabold tracking-tight drop-shadow-lg"
+    : "text-lg text-pretty text-white font-semibold tracking-tight"
+  const cardTitleBg = emphasizeTitle
 
   return (
     <div className="space-y-3 pb-24">
-      <Card className={`border-white/10 bg-black/45 backdrop-blur border-b-cyan-300/30 ${cardRadius} shadow-lg`}>
-        <CardHeader className={`${cardTitleBg} py-4`}> {/* More padding for emphasis */}
+      {/* Header Card */}
+      <Card
+        className={`relative overflow-hidden border border-white/10 ${cardRadius} shadow-lg
+                    bg-transparent backdrop-blur-sm`}
+      >
+        <CardHeader className={`${cardTitleBg} py-4`}>
           <CardTitle className={cardTitleText}>
             Year {year} Detections
           </CardTitle>
@@ -75,67 +89,91 @@ export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisi
             </div>
           </div>
           <div className="mt-2 text-xs text-white/60">
-            💡 <AccessibleTooltip term="Detection Confidence" showIcon={false}>
+            💡{" "}
+            <AccessibleTooltip term="Detection Confidence" showIcon={false}>
               <span className="underline decoration-dotted decoration-cyan-300/50 underline-offset-2">
                 Hover over underlined terms
               </span>
-            </AccessibleTooltip> for explanations
+            </AccessibleTooltip>{" "}
+            for explanations
           </div>
         </CardContent>
       </Card>
 
-      {/* make the list a flexible container so tooltips can escape and not get clipped */}
-      <div className="space-y-2 max-h-[50vh] overflow-y-auto lg:max-h-[600px] lg:overflow-y-auto lg:pr-2 
-        [&::-webkit-scrollbar]:w-2 
-        [&::-webkit-scrollbar-track]:bg-black/20 
-        [&::-webkit-scrollbar-thumb]:bg-cyan-300/20 
-        [&::-webkit-scrollbar-thumb:hover]:bg-cyan-300/40
-        hover:[&::-webkit-scrollbar-thumb]:bg-cyan-300/30"
+      {/* Events List */}
+      <div
+        className="space-y-2 max-h-[55vh] lg:max-h-[600px] overflow-y-auto pr-2
+                   scrollbar-thin scrollbar-thumb-cyan-300/30 scrollbar-track-transparent
+                   hover:scrollbar-thumb-cyan-300/50 transition-all duration-300"
       >
         <AnimatePresence initial={false}>
-          {visible.map((ev) => {
+          {visible.map((ev, index) => {
             const c = typeColor(ev.type, colors)
             const pct = Math.round(ev.confidence * 100)
             const isSelected = ev.id === selectedId
+
             return (
               <motion.div
                 key={ev.id}
                 layout
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.6 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{
+                  type: "tween",
+                  duration: 0.4,
+                  delay: index * 0.05,
+                  ease: "easeOut"
+                }}
               >
                 <Card
                   role="button"
                   tabIndex={0}
                   onClick={() => onSelect?.(ev)}
-                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect?.(ev)}
-                  className={`border-white/10 bg-black/45 backdrop-blur transition-all cursor-pointer ${
-                    isSelected ? "ring-2 ring-amber-300/60" : "hover:bg-black/55"
-                  } ${cardRadius}`}
+                  onKeyDown={(e) =>
+                    (e.key === "Enter" || e.key === " ") && onSelect?.(ev)
+                  }
+                  className={`relative border border-white/10 bg-white/5 backdrop-blur-sm
+                              transition-all duration-300 cursor-pointer
+                              hover:bg-white/10 hover:shadow-lg
+                              ${isSelected ? "ring-2 ring-amber-300/50" : ""}
+                              ${cardRadius}`}
                 >
                   <CardContent className={`${cardPadding}`}>
                     <div className={`flex items-start ${cardGap}`}>
+                      {/* Type dot */}
                       <span
                         className="mt-1 inline-block h-2 w-2 flex-shrink-0 rounded-full"
-                        style={{ backgroundColor: c, boxShadow: `0 0 8px ${c}` }}
+                        style={{
+                          backgroundColor: c,
+                          boxShadow: `0 0 8px ${c}`
+                        }}
                         aria-hidden="true"
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between">
-                          <div className={`font-medium text-white ${cardText}`}>{ev.event}</div>
+                          <div className={`font-medium text-white ${cardText}`}>
+                            {ev.event}
+                          </div>
                           <AccessibleTooltip term="Detection Confidence">
-                            <div className={`text-xs md:text-sm text-white/70 cursor-help font-medium`}>{pct}%</div>
+                            <div
+                              className={`text-xs md:text-sm text-white/70 cursor-help font-medium`}
+                            >
+                              {pct}%
+                            </div>
                           </AccessibleTooltip>
                         </div>
 
-                        <p className={`mt-1.5 ${cardText} leading-relaxed text-white/80`}>{ev.description}</p>
+                        <p
+                          className={`mt-1.5 ${cardText} leading-relaxed text-white/80`}
+                        >
+                          {ev.description}
+                        </p>
 
-                        {/* Simplified layout - just the key info */}
+                        {/* Key Info */}
                         <div className="mt-3 flex items-center justify-between">
                           <AccessibleTooltip term={ev.type}>
-                            <span className={`cursor-help text-white/80 text-xs md:text-sm font-medium`}>
+                            <span className="cursor-help text-white/80 text-xs md:text-sm font-medium">
                               {ev.type}
                             </span>
                           </AccessibleTooltip>
@@ -144,14 +182,22 @@ export function EventPanel({ year, events, colors, onSelect, selectedId, maxVisi
                           </span>
                         </div>
 
+                        {/* Confidence bar */}
                         <div className="mt-4">
                           <div className="h-1 overflow-hidden rounded-full bg-white/10">
                             <motion.div
                               className="h-full rounded-full"
-                              style={{ backgroundColor: c, boxShadow: `0 0 8px ${c}` }}
+                              style={{
+                                backgroundColor: c,
+                                boxShadow: `0 0 8px ${c}`
+                              }}
                               initial={{ width: 0 }}
                               animate={{ width: `${pct}%` }}
-                              transition={{ type: "spring", stiffness: 180, damping: 24 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 180,
+                                damping: 24
+                              }}
                             />
                           </div>
                         </div>

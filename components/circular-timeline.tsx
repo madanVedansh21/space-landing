@@ -355,15 +355,6 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
             </motion.div>
           </AnimatePresence>
         </div>
-
-
-        <motion.div
-          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-white/40"
-          animate={{ opacity: isDragging ? 0 : 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          Scroll/Drag to navigate
-        </motion.div>
       </motion.div>
     </div>
   )
