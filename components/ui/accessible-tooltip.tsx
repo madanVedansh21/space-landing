@@ -42,7 +42,7 @@ export function AccessibleTooltip({
             {children}
             {showIcon && (
               <InfoIcon 
-                className="h-3 w-3 text-cyan-300/70 hover:text-cyan-300 transition-colors" 
+                className="h-5 w-5 text-cyan-300/80 hover:text-cyan-300 transition-colors" 
                 aria-hidden="true"
               />
             )}

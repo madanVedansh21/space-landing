@@ -247,8 +247,9 @@ export default function AboutPage() {
               <span className="w-2 h-2 bg-purple-400 rounded-full mr-3"></span>
               About Team Blueberry
             </h2>
+            <h1 className="text-white/80 mb-4 leading-relaxed">Members: <b>Shivaprasad Gowda, Rudra Pratap Singh, Yash Verdhan, Vedansh Madan, Nakul Bhadade</b></h1>
             <p className="text-white/80 mb-4 leading-relaxed">
-              Team Blueberry developed this platform as part of the <strong className="text-purple-300">CTRL Space</strong> 
+              Team Blueberry developed this platform as part of the <strong className="text-purple-300">CTRL Space </strong> 
               competition, demonstrating our commitment to advancing space technology and astronomical research. 
               Our multidisciplinary team combines expertise in astrophysics, software engineering, and data science 
               to create innovative solutions for the space research community.

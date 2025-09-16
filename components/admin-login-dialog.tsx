@@ -89,7 +89,7 @@ export default function AdminLoginDialog({ isOpen, onClose }: AdminLoginDialogPr
           {error && <p className="text-red-400 text-sm">{error}</p>}
           <Button 
             type="submit" 
-            className="w-full"
+            className="w-full cursor-pointer"
             disabled={isLoading}
           >
             {isLoading ? "Logging in..." : "Login"}

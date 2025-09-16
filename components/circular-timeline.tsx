@@ -271,7 +271,7 @@ export default function CircularTimeline({ years, value, onChange, colors = {} }
                 <motion.circle
                   r={isActive ? 3.5 : isHovered ? 3 : 2}
                   fill={isActive ? accent : "rgba(255,255,255,0.6)"}
-                  filter={isActive ? "url(#glow-strong)" : "none"}
+                  filter={"none"}
                   initial={{ scale: 0 }}
                   animate={{ 
                     scale: isActive ? 1.2 : 1,

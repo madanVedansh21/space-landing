@@ -29,6 +29,8 @@ export default function DashboardPage() {
   const router = useRouter()
   const [gwData, setGwData] = useState<GWEvent[]>([])
   const [grbData, setGrbData] = useState<GRBEvent[]>([])
+  const [gwOpen, setGwOpen] = useState(true)
+  const [grbOpen, setGrbOpen] = useState(true)
   const [loading, setLoading] = useState(true)
   const [authChecked, setAuthChecked] = useState(false)
 
@@ -90,21 +92,37 @@ export default function DashboardPage() {
         <div>
           <button
             onClick={() => router.push('/submit')}
-            className="rounded-lg bg-cyan-500 hover:bg-cyan-400 px-6 py-2 text-white font-semibold"
+            className="rounded-lg bg-cyan-500 hover:bg-cyan-400 px-6 py-2 text-white font-semibold cursor-pointer"
           >
-            Submit Data
+            Submit Your Data
           </button>
         </div>
+      </div>
+
+      <div className="mb-6 text-m text-white/80 max-w-6xl">
+        This is the raw data of the two events whose correlation was initially shown on the landing page. If you submit new data, the correlation for that data will be updated on the landing page.
       </div>
 
       {/* GW Data Table Section */}
       <div className="grid gap-6 mb-10">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Raw GW Event Data</h2>
+          <div className="flex items-center mb-4">
+            <h2 className="text-2xl font-semibold">Raw GW Event Data</h2>
+            <button
+              aria-expanded={gwOpen}
+              onClick={() => setGwOpen((s) => !s)}
+              className="ml-2 rounded-md p-2 hover:bg-white/5 transition-colors cursor-pointer"
+              title={gwOpen ? 'Collapse GW table' : 'Expand GW table'}
+            >
+              <svg className={`w-4 h-4 transform transition-transform ${gwOpen ? 'rotate-180' : 'rotate-0'}`} viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
           {loading ? (
             <div className="text-white/60">Loading GW data...</div>
           ) : (
-            <DataTable data={gwData} type="gw" />
+            gwOpen && <DataTable data={gwData} type="gw" />
           )}
         </div>
       </div>
@@ -112,11 +130,23 @@ export default function DashboardPage() {
       {/* GRB Data Table Section */}
       <div className="grid gap-6">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Raw GRB Event Data</h2>
+          <div className="flex items-center mb-4">
+            <h2 className="text-2xl font-semibold">Raw GRB Event Data</h2>
+            <button
+              aria-expanded={grbOpen}
+              onClick={() => setGrbOpen((s) => !s)}
+              className="ml-2 rounded-md p-2 hover:bg-white/5 transition-colors cursor-pointer"
+              title={grbOpen ? 'Collapse GRB table' : 'Expand GRB table'}
+            >
+              <svg className={`w-4 h-4 transform transition-transform ${grbOpen ? 'rotate-180' : 'rotate-0'}`} viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.06z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
           {loading ? (
             <div className="text-white/60">Loading GRB data...</div>
           ) : (
-            <DataTable data={grbData} type="grb" />
+            grbOpen && <DataTable data={grbData} type="grb" />
           )}
         </div>
       </div>
@@ -128,7 +158,7 @@ export default function DashboardPage() {
             document.cookie = 'admin_auth=; Max-Age=0; path=/'
             router.replace('/')
           }}
-          className="rounded-lg bg-rose-500 hover:bg-rose-400 px-4 py-2 text-white font-semibold"
+          className="rounded-lg bg-rose-500 hover:bg-rose-400 px-4 py-2 text-white font-semibold cursor-pointer"
         >
           Logout
         </button>

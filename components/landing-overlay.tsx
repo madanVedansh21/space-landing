@@ -49,9 +49,9 @@ export default function LandingOverlay() {
           <div className="mx-auto max-w-lg text-center lg:text-left">
             <h1 className="text-pretty text-3xl font-extrabold tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
               <span className="block bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 to-amber-300">Sambandha</span>
-              <span className="block mt-1 text-base font-medium text-white/75 md:text-lg lg:text-base">A multi-messenger event correlator</span>
+              <span className="block mt-1 text-lg md:text-xl lg:text-lg font-semibold text-white/90">A multi-messenger event correlator</span>
             </h1>
-            <p className="mt-3 text-balance text-lg text-white/70 lg:text-xl">
+            <p className="mt-3 text-balance text-sm text-white/60 lg:text-base">
               Drag or scroll the dial to explore yearly detections.
             </p>
 
@@ -97,7 +97,7 @@ export default function LandingOverlay() {
 
         {/* Right side - Event details, shifted down */}
         <section className="flex flex-col px-4 pt-20 pb-8 lg:px-8">
-          <div className="mx-auto w-full max-w-lg lg:h-full lg:overflow-y-auto lg:py-2">
+          <div className="mx-auto w-full max-w-lg lg:h-full lg:overflow-y-auto lg:py-4">
             <EventPanel
               year={year}
               events={events}
