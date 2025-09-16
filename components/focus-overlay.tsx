@@ -80,7 +80,7 @@ export function FocusOverlay({
 
           {/* Left panel - Angular Distance */}
           <motion.div
-            className="absolute left-[15%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
+            className="absolute left-[10%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -111,7 +111,7 @@ export function FocusOverlay({
 
           {/* Right panel - Time Difference */}
           <motion.div
-            className="absolute right-[15%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
+            className="absolute right-[10%] top-1/2 -translate-y-1/2 z-[110] max-w-[320px]"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
@@ -146,7 +146,7 @@ export function FocusOverlay({
 
           {/* Bottom analogy */}
           <motion.div
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 z-[110] max-w-[600px] w-full px-4"
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[110] max-w-[600px] w-full px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
@@ -260,7 +260,7 @@ function FocusVizCentered({
       {/* Labels */}
       <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Angular label */}
-        <text dy={-8} fill="#facc15" fontSize="12" className="uppercase tracking-wider font-semibold">
+        <text dy={-8} fill="#facc15" fontSize="16" className="uppercase tracking-wider font-semibold">
           <textPath href="#angularPath" startOffset="50%" textAnchor="middle">
             Angular Size
           </textPath>
@@ -272,7 +272,7 @@ function FocusVizCentered({
         </motion.text>
 
         {/* Time difference label */}
-        <text dy={-8} fill="#22d3ee" fontSize="12" className="uppercase tracking-wider font-semibold">
+        <text dy={-8} fill="#22d3ee" fontSize="16" className="uppercase tracking-wider font-semibold">
           <textPath href="#timePath" startOffset="50%" textAnchor="middle">
             Time Difference
           </textPath>
@@ -300,7 +300,7 @@ function FocusVizCentered({
         x={cx}
         y="160"
         fill="#ffffff"
-        fontSize="32"
+        fontSize="34"
         textAnchor="middle"
         className="font-semibold"
         filter="url(#glow-strong)"
@@ -310,8 +310,8 @@ function FocusVizCentered({
       <text
         x={cx}
         y="195"
-        fill="#cfcfee"
-        fontSize="16"
+        fill="#d3d3ffff"
+        fontSize="20"
         textAnchor="middle"
         className="uppercase tracking-wider opacity-70"
       >
