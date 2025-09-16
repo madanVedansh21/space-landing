@@ -4,7 +4,7 @@ import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Navbar from '@/components/navbar'
-import HomeLayout from '@/components/home-layout'
+import ConditionalHomeLayout from '@/components/conditional-home-layout'
 
 export const metadata: Metadata = {
   title: 'Team BlueBerry',
@@ -21,21 +21,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  // Only wrap the home page ('/') with HomeLayout
-  // For other routes, render children directly
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-  const isHome = pathname === '/';
+  // Using ConditionalHomeLayout client component to handle routing differences
   return (
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Navbar />
-        {typeof window !== 'undefined' && isHome ? (
-          <HomeLayout>
-            {children}
-          </HomeLayout>
-        ) : (
-          children
-        )}
+        <ConditionalHomeLayout>
+          {children}
+        </ConditionalHomeLayout>
         <Analytics />
       </body>
     </html>

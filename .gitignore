@@ -7,6 +7,8 @@
 /.next/
 /out/
 
+/all_paths.txt
+
 # production
 /build
 

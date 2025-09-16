@@ -7,9 +7,10 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    // Enable image optimization for better performance
+    unoptimized: false,
   },
-  devIndicators : false,
+  devIndicators: false,
 };
 
-export default nextConfig
+export default nextConfig;

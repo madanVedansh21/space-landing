@@ -160,6 +160,14 @@ export default function SubmitPage() {
           <p>• <strong>File Format:</strong> Only CSV files are accepted</p>
           <p>• <strong>Purpose:</strong> Our algorithm requires multiple datasets to find correlations between events</p>
           <p>• <strong>Processing:</strong> Files will be analyzed to identify potential correlations based on temporal and spatial proximity</p>
+          <p>• <strong>IMPORTANT NOTE:</strong> You will only receive the top 200 correlations from our model in order to reduce the load on our Flask-based Python server. Only these results will be stored in MongoDB</p>
+          <p>• <strong>READ_ME:</strong> In later stages/ROUNDS, if needed, we can provide all the correlations * IN A BIG CSV FILE *. For now, we are only sharing the top 200</p>
+          <p>
+            • <strong>OUR_FLASK_SERVER + MODEL_GITHUB_LINK: </strong>
+            <a href="https://github.com/madanVedansh21/kd-tree_-ctrl-hack" className="text-cyan-400 underline" target="_blank" rel="noopener noreferrer">
+              https://github.com/madanVedansh21/kd-tree_-ctrl-hack
+            </a>
+          </p>
         </div>
       </div>
 
