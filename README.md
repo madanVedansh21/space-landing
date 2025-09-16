@@ -1,5 +1,7 @@
 # Space Landing
-vercel link : https://space-landing1.vercel.app/
+vercel link : https://space-landing1.vercel.app/  <br>
+python server git repo : https://github.com/madanVedansh21/kd-tree_-ctrl-hack <br>
+web server git repo : https://github.com/madanVedansh21/space-landing <br>
 # 
 A full-stack web application for multimessenger astronomy event correlation and visualization.
 
