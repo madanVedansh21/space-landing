@@ -139,34 +139,69 @@ export default function AboutPage() {
               <span className="w-2 h-2 bg-amber-400 rounded-full mr-3"></span>
               Data Sources & Coverage
             </h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-medium text-cyan-300 mb-3">Gravitational Wave Events</h3>
-                <p className="text-white/80 mb-3 text-sm leading-relaxed">
-                  Our dataset includes <strong>25 confirmed GW events</strong> from the LIGO-Virgo collaborations, 
-                  spanning from the historic first detection GW150914 to recent observations through 2023.
+                <h3 className="text-lg font-medium text-cyan-300 mb-3">Gravitational Wave Events (GWOSC)</h3>
+                    <p className="text-white/80 text-sm leading-relaxed mb-2">
+                      Our GWOSC dataset includes <strong>90 confirmed GW events</strong> compiled from the official LIGO–Virgo catalogs (GWTC-1, GWTC-2.1, GWTC-3) and spans observations from the landmark detection <strong>GW150914 (2015)</strong> through recent events. The events include both binary black hole mergers and neutron star mergers.
+                    </p>
+                    <ul className="text-white/70 text-sm space-y-1">
+                      <li>• Data sourced from LIGO–Virgo Open Science Center (GWOSC) catalogs</li>
+                      <li>• Covers events from 2015 to 2023</li>
+                      <li>• Binary black hole and neutron star mergers</li>
+                      <li>• Position data provided where available, though most events lack precise sky localization</li>
+                      <li>• Signal-to-noise ratios (SNR) range from 4.5 to 33</li>
+                    </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-purple-400 mb-3">Gamma-Ray Burst Events  (HEASARC)</h3>
+                  <p className="text-white/80 text-sm leading-relaxed mb-2">
+                    Our HEASARC dataset compiles <strong>~11,000 GRB events</strong> from the <em>SwiftGRB</em> and <em>GRBCAT</em> archives. It spans detections from the 1960s through the modern Swift era, covering both historical bursts and recent well-localized events.
+                  </p>
+                  <ul className="text-white/70 text-sm space-y-1 mb-2">
+                    <li>• Data sourced from <em>HEASARC SwiftGRB</em> and <em>GRBCAT</em> catalogs</li>
+                    <li>• Covers events from 1967 to recent years</li>
+                    <li>• Positions available for ~6,800 bursts, with RA/Dec provided where measured</li>
+                    <li>• <em>Positional uncertainties</em> (pos_error_deg) assigned with realistic values:</li>
+                  </ul>
+                  <ul className="text-white/70 text-sm ml-4 list-disc space-y-1 mb-2">
+                    <li>Swift BAT: ~0.02–0.07° (arcmin-scale)</li>
+                    <li>Historical GRBs: ~0.5–2° (large error boxes)</li>
+                    <li>Transitional (2000s): ~0.1–0.5°</li>
+                  </ul>
+                  <p className="text-white/70 text-sm">
+                    • <em>Signal strength</em> normalized (0–1), derived from peak flux/fluence when available.
+                  </p>
+
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-rose-500 mb-3">Transient Name Server (TNS) Events</h3>
+                <p className="text-white/80 text-sm leading-relaxed mb-2">
+                  Our TNS dataset contains <em>hundreds of confirmed transient and supernova events</em>, obtained from the official IAU Transient Name Server and standardized from parquet to CSV for analysis. These events include a wide variety of astronomical transients such as <strong>Astronomical Transients (AT)</strong>, <strong>Type II Supernovae (SN II)</strong>, and <strong>Type Ic Supernovae (SN Ic)</strong>, with discovery dates spanning multiple years.
                 </p>
-                <ul className="text-white/70 text-sm space-y-1">
-                  <li>• LIGO Hanford & Livingston observatories</li>
-                  <li>• Virgo gravitational wave detector</li>
-                  <li>• Binary black hole and neutron star mergers</li>
-                  <li>• Position uncertainties from 0.004° to 2.073°</li>
-                  <li>• Signal-to-noise ratios from 9 to 32</li>
+                <ul className="text-white/70 text-sm space-y-1 mb-2">
+                  <li>• Official IAU Transient Name Server (TNS) catalog</li>
+                  <li>• Event classes include AT, SN II, SN Ic, and others</li>
+                  <li>• Sky positions (RA, Dec) provided with arcsecond-level precision</li>
+                  <li>• Positional uncertainties typically ~5.6×10⁻⁵° (≃0.2 arcsec) for most entries</li>
+                  <li>• Reported magnitudes / signal strengths range from ~18 to ~27</li>
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-medium text-purple-300 mb-3">Gamma-Ray Burst Events</h3>
-                <p className="text-white/80 mb-3 text-sm leading-relaxed">
-                  Our GRB catalog contains <strong>35 high-energy events</strong> strategically selected 
-                  to maximize correlation potential, including the famous GRB170817A counterpart.
+                <h3 className="text-lg font-medium text-green-500 mb-3">VizieR Catalog Events (Vizier/Other Archives)</h3>
+                <p className="text-white/80 text-sm leading-relaxed mb-2">
+                  Our VizieR dataset compiles <em>astrophysical transient events</em> from multiple archival catalogs, standardized into a clean format for analysis and cross-correlation.
                 </p>
-                <ul className="text-white/70 text-sm space-y-1">
-                  <li>• Fermi Gamma-ray Space Telescope</li>
-                  <li>• Neil Gehrels Swift Observatory</li>
-                  <li>• Ground-based gamma-ray observatories</li>
-                  <li>• Position errors ranging from 3.2° to 25°</li>
-                  <li>• Flux measurements from 3.8 to 45.7</li>
+                <ul className="text-white/70 text-sm space-y-1 mb-2">
+                  <li>• Data sourced from VizieR online service and associated catalogs</li>
+                  <li>• Includes positions (RA/Dec) with calibrated uncertainties</li>
+                  <li>• Event coverage spans multiple decades of astronomical surveys</li>
+                  <li>• Parameters include fluxes, magnitudes, and derived uncertainties</li>
+                  <li>• Cleaned and harmonized into a structured CSV format for research use</li>
                 </ul>
+                <p className="text-white/70 text-sm">
+                  This dataset provides a unified, machine-readable collection of transient event parameters, enabling integration with GW and GRB datasets for multi-messenger astrophysics studies.
+                </p>
               </div>
             </div>
           </div>
@@ -226,7 +261,7 @@ export default function AboutPage() {
             <p className="text-white/80 mb-4 leading-relaxed">
               This platform represents a significant advancement in multimessenger astronomy research, providing 
               tools that can accelerate the discovery of cosmic phenomena. Our correlation algorithms have 
-              successfully identified the historic <strong className="text-amber-300">GW170817-GRB170817A</strong> 
+              successfully identified the historic <strong className="text-amber-300">GW170817-GRB170817A </strong> 
               correlation, demonstrating the system's capability to detect genuine multimessenger events.
             </p>
             <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-lg p-6 border border-cyan-500/20">
